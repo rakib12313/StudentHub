@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudentHub - Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StudentHub - Mobile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -12,13 +12,13 @@
             --primary: #6366f1;       
             --primary-dark: #4338ca;
             --secondary: #ec4899;
-            --bg: #f3f4f6;            
+            --bg: #f8fafc;            
             --surface: #ffffff;
-            --border: #e5e7eb;
-            --text-main: #1f2937;
-            --text-light: #6b7280;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-light: #64748b;
             --radius: 16px;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
 
@@ -28,24 +28,27 @@
             font-family: 'Inter', sans-serif; margin: 0; 
             background: var(--bg); color: var(--text-main);
             display: flex; flex-direction: column; min-height: 100vh;
-            padding-bottom: 90px;
+            /* Critical for mobile: Space for bottom nav */
+            padding-bottom: 90px; 
         }
 
-        /* --- Navbar --- */
+        /* --- Navbar (Top) --- */
         nav { 
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
             padding: 0.8rem 5%; 
             display: flex; justify-content: space-between; align-items: center; 
-            position: sticky; top: 0; z-index: 100;
+            position: sticky; top: 0; z-index: 900;
+            height: 60px;
         }
 
         .logo { 
-            font-weight: 800; font-size: 1.5rem; background: var(--gradient); 
+            font-weight: 800; font-size: 1.4rem; background: var(--gradient); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             display: flex; align-items: center; gap: 8px; cursor: pointer;
         }
         
+        /* Desktop Menu (Hidden on Mobile) */
         .desktop-menu { display: flex; gap: 8px; }
         .menu-item {
             border: none; background: transparent; padding: 8px 18px;
@@ -56,148 +59,183 @@
         .menu-item.active { background: var(--text-main); color: white; font-weight: 600; }
         .menu-item.admin-lock { color: #ef4444; }
 
+        /* Auth Buttons */
         .auth-btn {
             background: var(--text-main); color: white; border: none;
-            padding: 8px 20px; border-radius: 50px; font-weight: 600;
+            padding: 8px 16px; border-radius: 50px; font-weight: 600;
             cursor: pointer; transition: 0.2s; box-shadow: var(--shadow);
-            display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
         }
         
         /* Profile Dropdown */
-        .profile-container { position: relative; display: none; align-items: center; cursor: pointer; gap: 10px; }
-        .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .profile-container { position: relative; display: none; align-items: center; cursor: pointer; gap: 8px; }
+        .profile-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         .profile-dropdown {
-            position: absolute; top: 55px; right: 0; background: white;
+            position: absolute; top: 50px; right: 0; background: white;
             border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            width: 200px; display: none; flex-direction: column; overflow: hidden;
+            width: 180px; display: none; flex-direction: column; overflow: hidden;
             border: 1px solid var(--border); animation: slideDown 0.2s ease;
+            z-index: 1000;
         }
         .profile-dropdown.show { display: flex; }
-        .pd-item { padding: 12px 15px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; }
-        .pd-item:hover { background: #f9fafb; color: var(--primary); }
+        .pd-item { padding: 12px 15px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .pd-item:last-child { border-bottom: none; color: #ef4444; }
 
-        /* --- Mobile Nav --- */
+        /* --- Mobile Nav (Bottom) --- */
         .mobile-nav {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%;
-            background: white; border-top: 1px solid var(--border);
-            justify-content: space-around; padding: 12px 10px; z-index: 99;
+            display: none; /* Default hidden on large screens */
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%;
+            height: 70px;
+            background: white; 
+            border-top: 1px solid var(--border);
+            justify-content: space-around; 
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); /* iPhone X+ safe area */
+            z-index: 1000; /* Highest priority */
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
         }
+
         .mob-link {
             border: none; background: none; flex: 1;
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            color: var(--text-light); font-size: 0.7rem; font-weight: 500; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 4px; color: var(--text-light); 
+            font-size: 0.7rem; font-weight: 500; cursor: pointer;
+            height: 100%;
         }
+        .mob-link i { font-size: 1.4rem; margin-bottom: 2px; transition: 0.2s; }
         .mob-link.active { color: var(--primary); }
+        .mob-link.active i { transform: translateY(-2px); }
 
         /* --- Layout --- */
-        .container { max-width: 900px; margin: 1.5rem auto; padding: 0 20px; flex: 1; width: 100%; }
-        .section { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .container { max-width: 900px; margin: 1rem auto; padding: 0 15px; flex: 1; width: 100%; }
+        .section { display: none; animation: fadeIn 0.3s ease-out; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- Components --- */
         .hero {
             background: var(--surface); color: var(--text-main);
-            padding: 2.5rem 2rem; border-radius: 24px; margin-bottom: 2rem;
+            padding: 2rem 1.5rem; border-radius: 20px; margin-bottom: 1.5rem;
             position: relative; overflow: hidden; box-shadow: var(--shadow);
             border: 1px solid white;
             background-image: radial-gradient(circle at 100% 0%, #e0e7ff 0%, transparent 25%);
         }
-        .hero h1 { margin: 0 0 10px; font-size: 1.8rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero h1 { margin: 0 0 5px; font-size: 1.6rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         /* Notices */
-        .notices-grid { display: grid; gap: 1rem; }
+        .notices-grid { display: grid; gap: 0.8rem; }
         .notice-card {
-            background: white; border-radius: 16px; padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid var(--border);
-            position: relative; display: flex; gap: 15px; align-items: flex-start;
+            background: white; border-radius: 12px; padding: 1.2rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            position: relative; display: flex; gap: 12px; align-items: flex-start;
         }
-        .notice-icon { background: #e0e7ff; color: var(--primary); width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-        .admin-del-notice { position: absolute; top: 10px; right: 10px; color: #ef4444; background: none; border: none; cursor: pointer; display: none; }
+        .notice-icon { background: #e0e7ff; color: var(--primary); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .admin-del-notice { position: absolute; top: 10px; right: 10px; color: #ef4444; background: none; border: none; font-size: 1.1rem; padding: 5px; cursor: pointer; display: none; }
         body.is-admin .admin-del-notice { display: block; }
 
-        /* Files & Tabs */
+        /* Files Tabs */
         .file-tabs-container {
-            background: #e5e7eb; padding: 4px; border-radius: 12px;
-            display: flex; margin-bottom: 20px; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto;
+            background: #e2e8f0; padding: 4px; border-radius: 12px;
+            display: flex; margin-bottom: 1.5rem; width: 100%; 
         }
         .file-tab-btn {
-            flex: 1; border: none; padding: 10px; border-radius: 10px;
+            flex: 1; border: none; padding: 10px; border-radius: 8px;
             font-weight: 600; color: var(--text-light); background: transparent;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer; transition: 0.3s; font-size: 0.9rem;
         }
         .file-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .file-sub-view { display: none; }
         .file-sub-view.active { display: block; animation: fadeIn 0.3s ease; }
 
         /* File Card */
-        .file-list { display: flex; flex-direction: column; gap: 12px; }
+        .file-list { display: flex; flex-direction: column; gap: 10px; }
         .file-card {
             background: white; border: 1px solid var(--border);
             border-radius: 12px; overflow: hidden;
             display: flex; flex-direction: row; height: 100px;
-            position: relative; transition: transform 0.2s;
+            position: relative;
         }
-        .file-card:hover { transform: scale(1.01); border-color: var(--primary); }
-        .file-preview { width: 90px; height: 100%; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); flex-shrink: 0; }
+        .file-preview { width: 85px; height: 100%; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); flex-shrink: 0; }
         .file-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .file-info { padding: 10px 15px; flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-        .file-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-info { padding: 8px 12px; flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .file-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+        .file-meta { font-size: 0.75rem; color: var(--text-light); margin-bottom: 6px; }
         .file-actions { display: flex; gap: 10px; margin-top: auto; }
-        .action-link { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--primary); cursor: pointer; }
+        .action-link { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--primary); cursor: pointer; padding: 4px 0; }
 
-        .admin-del-file { position: absolute; top: 5px; right: 5px; background: #fee2e2; color: #b91c1c; border: none; width: 24px; height: 24px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; }
+        .admin-del-file { position: absolute; top: 5px; right: 5px; background: #fee2e2; color: #b91c1c; border: none; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
         body.is-admin .admin-del-file { display: flex; }
 
         /* Status & Drive */
-        .status-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .status-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display:flex; align-items:center; gap:4px; }
         .st-pending { background: #fef3c7; color: #d97706; }
         .st-approved { background: #dcfce7; color: #166534; }
         .st-rejected { background: #fee2e2; color: #b91c1c; }
 
-        .drive-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-        .drive-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); font-weight: 600; }
+        .drive-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .drive-card { background: white; padding: 18px; border-radius: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); font-weight: 600; }
 
-        /* Stats & Utils */
-        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--text-main); color: white; padding: 15px; border-radius: 16px; text-align: center; }
-        .online-dot { width: 10px; height: 10px; background: #4ade80; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #4ade80; }
-
-        .search-bar { width: 100%; padding: 14px 20px; border-radius: 50px; border: 1px solid var(--border); margin-bottom: 1.5rem; outline: none; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; }
-
-        /* Modals */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; display: none; align-items: center; justify-content: center; }
-        .modal-box { background: white; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
-        .preview-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; }
-        .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .preview-content img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .preview-content iframe { width: 100%; height: 100%; max-width: 900px; background: white; border: none; }
-
-        .toast-box { position: fixed; bottom: 85px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 300; }
-        .toast { background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); animation: slideIn 0.3s; font-size: 0.9rem; font-weight: 500; }
+        /* UI Elements */
+        /* Font size 16px prevents iOS zoom on focus */
+        .search-bar { width: 100%; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); margin-bottom: 1.5rem; outline: none; font-size: 16px; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 16px; }
         
-        .grid-2 { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
-        @media (max-width: 768px) {
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 2rem; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
+
+        .preview-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: none; flex-direction: column; }
+        .preview-header { padding: 15px; display: flex; justify-content: space-between; color: white; background: rgba(0,0,0,0.5); align-items: center; }
+        .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px; }
+        .preview-content img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .preview-content iframe { width: 100%; height: 100%; background: white; border: none; }
+
+        .toast-box { position: fixed; bottom: 80px; right: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 4000; pointer-events: none; }
+        .toast { background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-left: 4px solid var(--primary); animation: slideIn 0.3s; font-size: 0.9rem; font-weight: 500; text-align: center; pointer-events: auto; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--text-main); color: white; padding: 15px; border-radius: 16px; text-align: center; }
+        .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #4ade80; }
+
+        /* --- MEDIA QUERIES (The Mobile Magic) --- */
+        @media (max-width: 850px) {
             .desktop-menu { display: none; }
             .mobile-nav { display: flex; }
             .grid-2 { grid-template-columns: 1fr; }
-            .hero { padding: 2rem 1.5rem; }
+            .hero { padding: 1.5rem 1.2rem; }
+            .drive-container { grid-template-columns: 1fr; }
+            
+            /* Adjustments for better mobile spacing */
+            .container { margin-top: 10px; }
+            .file-card { height: 90px; }
+            .file-preview { width: 80px; }
+            .file-info { padding: 8px 10px; }
         }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        @media (min-width: 851px) {
+            .mobile-nav { display: none !important; }
+            body { padding-bottom: 0; }
+            .drive-container { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .grid-2 { grid-template-columns: 1fr 300px; }
+        }
+
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR (Top) -->
     <nav>
         <div class="logo" onclick="window.nav('home')">
             <i class="fas fa-graduation-cap"></i> StudentHub
         </div>
+        
+        <!-- Desktop Links -->
         <div class="desktop-menu">
             <button class="menu-item active" onclick="window.nav('home')">Home</button>
             <button class="menu-item" onclick="window.nav('files')">Library</button>
@@ -225,17 +263,18 @@
         </div>
     </nav>
 
+    <!-- MAIN CONTENT -->
     <div class="container">
 
         <!-- === HOME === -->
         <div id="home" class="section active">
             <div class="hero">
                 <h1>Welcome, Student!</h1>
-                <p style="color:var(--text-light); margin:0;">Access your notes, papers, and important updates in one place.</p>
+                <p style="color:var(--text-light); margin:0; font-size:0.95rem;">Access your notes, papers, and important updates in one place.</p>
             </div>
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
-                <i class="fas fa-bullhorn" style="color:var(--secondary); font-size:1.5rem;"></i>
-                <h2 style="margin:0;">Notice Board</h2>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
+                <i class="fas fa-bullhorn" style="color:var(--secondary); font-size:1.3rem;"></i>
+                <h3 style="margin:0;">Notice Board</h3>
             </div>
             <div id="public-notices" class="notices-grid">
                 <div class="notice-card" style="justify-content:center; color:#999;">Loading...</div>
@@ -244,13 +283,13 @@
 
         <!-- === LIBRARY === -->
         <div id="files" class="section">
-            <div style="text-align:center; margin-bottom: 20px;">
+            <div style="text-align:center; margin-bottom: 15px;">
                 <h2>Resource Library</h2>
             </div>
 
             <div class="file-tabs-container">
-                <button class="file-tab-btn active" onclick="window.switchFileView('browse')">Browse Materials</button>
-                <button class="file-tab-btn" onclick="window.switchFileView('upload')">Upload & Status</button>
+                <button class="file-tab-btn active" onclick="window.switchFileView('browse')">Browse</button>
+                <button class="file-tab-btn" onclick="window.switchFileView('upload')">Upload / Status</button>
             </div>
 
             <!-- Browse -->
@@ -263,11 +302,11 @@
 
             <!-- Upload & Status -->
             <div id="view-upload" class="file-sub-view">
-                <div style="background:white; padding:2rem; border-radius:20px; text-align:center; border:2px dashed #cbd5e1; margin-bottom:2rem;">
-                    <i class="fas fa-cloud-upload-alt" style="font-size:3rem; color:var(--primary); margin-bottom:15px;"></i>
-                    <h3 style="margin:0 0 10px;">Contribute Materials</h3>
-                    <p style="font-size:0.9rem; color:var(--text-light); margin-bottom:20px;">PDFs and Images. Max 10MB.</p>
-                    <input type="text" id="file-title" placeholder="Title (e.g. Math Chapter 1)">
+                <div style="background:white; padding:1.5rem; border-radius:20px; text-align:center; border:2px dashed #cbd5e1; margin-bottom:1.5rem;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:2.5rem; color:var(--primary); margin-bottom:10px;"></i>
+                    <h3 style="margin:0 0 5px;">Upload File</h3>
+                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">PDF/Image. Max 10MB.</p>
+                    <input type="text" id="file-title" placeholder="File Title (e.g. Physics Notes)">
                     <input type="file" id="file-input" multiple accept=".pdf, .jpg, .jpeg, .png">
                     <div id="progress-container" style="display:none; margin:10px 0;">
                         <div style="font-size:0.8rem; text-align:left;" id="progress-text">Uploading...</div>
@@ -276,8 +315,8 @@
                     <button id="upload-btn-el" onclick="window.uploadFile()" class="auth-btn" style="width:100%; justify-content:center;">Upload Now</button>
                 </div>
 
-                <div style="margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <i class="fas fa-history" style="color:var(--text-main);"></i><h3 style="margin:0;">My Submission History</h3>
+                <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-history" style="color:var(--text-main);"></i><h4 style="margin:0;">My History</h4>
                 </div>
                 <div id="my-status-list">
                     <p style="text-align:center; color:#999; font-size:0.9rem;">Login to view your history.</p>
@@ -289,56 +328,65 @@
         <div id="drive" class="section">
             <div style="text-align:center; margin-bottom: 2rem;">
                 <h2><i class="fab fa-google-drive" style="color:#10b981;"></i> Cloud Backup</h2>
-                <p style="color:var(--text-light); font-size:0.9rem;">Links available if database is offline.</p>
+                <p style="color:var(--text-light); font-size:0.9rem;">Fallback links if database is offline.</p>
             </div>
             <div id="drive-links-list" class="drive-container"><p style="text-align:center; color:#888;">Checking backups...</p></div>
         </div>
 
         <!-- === ABOUT === -->
         <div id="about" class="section">
-            <div style="background:white; padding:40px; border-radius:24px; text-align:center; max-width:600px; margin:0 auto; box-shadow:var(--shadow);">
-                <i class="fas fa-graduation-cap" style="font-size:4rem; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:1rem;"></i>
-                <h2>StudentHub Portal</h2>
-                <p style="line-height:1.8; color:var(--text-light);">A centralized platform for academic resource sharing.</p>
-                <div style="margin-top:30px; border-top:1px solid var(--border); padding-top:20px;">
-                    <small>Developed by</small><h3 style="margin:5px 0; color:var(--primary);">Sabbir Ahmed Rakib</h3><small style="color:var(--text-light);">&copy; 2024</small>
+            <div style="background:white; padding:30px; border-radius:24px; text-align:center; max-width:600px; margin:0 auto; box-shadow:var(--shadow);">
+                <i class="fas fa-graduation-cap" style="font-size:3.5rem; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:1rem;"></i>
+                <h2>StudentHub</h2>
+                <p style="line-height:1.6; color:var(--text-light); font-size:0.95rem;">A centralized platform for academic resource sharing.</p>
+                <div style="margin-top:25px; border-top:1px solid var(--border); padding-top:15px;">
+                    <small>Developed by</small><h4 style="margin:5px 0; color:var(--primary);">Sabbir Ahmed Rakib</h4><small style="color:var(--text-light);">&copy; 2024</small>
                 </div>
             </div>
         </div>
 
         <!-- === ADMIN === -->
         <div id="admin-dash" class="section">
-            <div style="background:var(--text-main); color:white; padding:1.5rem; border-radius:16px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
-                <h3><i class="fas fa-shield-alt"></i> Admin Panel</h3>
-                <button onclick="window.logoutAdmin()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 15px; border-radius:50px; cursor:pointer; font-size:0.8rem;">Exit</button>
+            <div style="background:var(--text-main); color:white; padding:1.2rem; border-radius:16px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                <h3><i class="fas fa-shield-alt"></i> Admin</h3>
+                <button onclick="window.logoutAdmin()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 12px; border-radius:50px; cursor:pointer; font-size:0.8rem;">Exit</button>
             </div>
             <div class="stats-row">
-                <div class="stat-card"><div id="stat-total-users" style="font-size:1.8rem; font-weight:700;">...</div><small>Total Users</small></div>
-                <div class="stat-card"><div id="stat-active-users" style="font-size:1.8rem; font-weight:700;">0</div><small><span class="online-dot"></span>Online Now</small></div>
+                <div class="stat-card"><div id="stat-total-users" style="font-size:1.5rem; font-weight:700;">...</div><small>Users</small></div>
+                <div class="stat-card"><div id="stat-active-users" style="font-size:1.5rem; font-weight:700;">0</div><small><span class="online-dot"></span>Online</small></div>
             </div>
             <div class="grid-2">
                 <div>
-                    <h4 style="border-bottom:2px solid var(--border); padding-bottom:10px;">Pending Approvals</h4>
-                    <div id="admin-pending-list" style="margin-top:15px;">No pending items.</div>
-                    <h4 style="margin-top:30px; border-bottom:2px solid var(--border); padding-bottom:10px;">Who is Online?</h4>
-                    <div id="active-user-list" style="margin-top:15px; background:white; padding:15px; border-radius:12px; font-size:0.9rem;">No active users.</div>
+                    <h4 style="border-bottom:2px solid var(--border); padding-bottom:8px;">Pending</h4>
+                    <div id="admin-pending-list" style="margin-top:10px;">No pending items.</div>
+                    <h4 style="margin-top:25px; border-bottom:2px solid var(--border); padding-bottom:8px;">Online Users</h4>
+                    <div id="active-user-list" style="margin-top:10px; background:white; padding:15px; border-radius:12px; font-size:0.9rem;">None.</div>
                 </div>
                 <div>
-                    <div style="background:white; padding:20px; border-radius:16px; margin-bottom:20px; border:1px solid var(--border);">
+                    <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
                         <h4>Post Notice</h4>
                         <textarea id="admin-msg" rows="3" placeholder="Write announcement..."></textarea>
-                        <button onclick="window.postNotice()" class="auth-btn" style="width:100%; justify-content:center;">Post Notice</button>
+                        <button onclick="window.postNotice()" class="auth-btn" style="width:100%; justify-content:center;">Post</button>
                     </div>
-                    <div style="background:white; padding:20px; border-radius:16px; border:1px solid var(--border);">
-                        <h4>Add Backup Link</h4>
-                        <input type="text" id="drive-title" placeholder="Folder Name">
-                        <input type="text" id="drive-url" placeholder="Drive URL">
-                        <button onclick="window.addDriveLink()" class="auth-btn" style="width:100%; justify-content:center; background:#10b981;">Add Link</button>
-                        <div id="admin-drive-list" style="margin-top:15px; font-size:0.8rem;"></div>
+                    <div style="background:white; padding:15px; border-radius:16px; border:1px solid var(--border);">
+                        <h4>Add Drive Link</h4>
+                        <input type="text" id="drive-title" placeholder="Name">
+                        <input type="text" id="drive-url" placeholder="URL">
+                        <button onclick="window.addDriveLink()" class="auth-btn" style="width:100%; justify-content:center; background:#10b981;">Add</button>
+                        <div id="admin-drive-list" style="margin-top:10px; font-size:0.8rem;"></div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- BOTTOM NAV (Mobile Only) -->
+    <div class="mobile-nav">
+        <button class="mob-link active" onclick="window.nav('home')"><i class="fas fa-home"></i> Home</button>
+        <button class="mob-link" onclick="window.nav('files')"><i class="fas fa-book"></i> Library</button>
+        <button class="mob-link" onclick="window.nav('drive')"><i class="fab fa-google-drive"></i> Backup</button>
+        <button class="mob-link" onclick="window.nav('about')"><i class="fas fa-info-circle"></i> About</button>
+        <button class="mob-link" onclick="window.handleAdminClick()"><i class="fas fa-user-shield"></i> Admin</button>
     </div>
 
     <!-- Modals -->
@@ -355,7 +403,7 @@
     <div id="preview-modal" class="preview-overlay">
         <div class="preview-header">
             <h4 id="preview-title" style="margin:0;">Preview</h4>
-            <button onclick="window.closePreview()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <button onclick="window.closePreview()" style="background:none; border:none; color:white; font-size:1.8rem; cursor:pointer; padding: 0 10px;">&times;</button>
         </div>
         <div id="preview-body" class="preview-content"></div>
     </div>
@@ -464,10 +512,10 @@
                 checkSubAdmin(user.email);
                 registerUser(user);
                 startPresence(user);
-                loadAllFiles(); // Load files after login to ensure context
+                loadAllFiles(); 
             } else {
                 if(presenceInterval) clearInterval(presenceInterval);
-                loadAllFiles(); // Also load if guest (though logic might restrict info)
+                loadAllFiles(); 
             }
         });
 
@@ -504,7 +552,6 @@
             document.body.classList.add('is-admin');
             window.nav('admin');
             loadStats();
-            // Refetch files to show admin controls
             loadAllFiles();
             loadAdminDrive();
         }
@@ -600,8 +647,7 @@
             document.getElementById('drive-title').value = ''; document.getElementById('drive-url').value = ''; window.toast("Added", "success");
         }
 
-        // --- DATA LOADERS (CLIENT SIDE FILTERING) ---
-        // This fixes the "Missing Index" issue by fetching all and filtering in JS
+        // --- DATA LOADERS ---
         function loadAllFiles() {
             onSnapshot(collection(db, "files"), (snap) => {
                 let publicHtml = "";
@@ -610,12 +656,10 @@
                 
                 const allFiles = [];
                 snap.forEach(doc => allFiles.push({ id: doc.id, ...doc.data() }));
-
-                // Sort by timestamp desc (Newest first)
                 allFiles.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                 allFiles.forEach(d => {
-                    // 1. Public Gallery (Approved Only)
+                    // Public
                     if(d.status === 'approved') {
                         const icon = d.type === 'PDF' ? '<i class="fas fa-file-pdf" style="color:#ef4444; font-size:2rem;"></i>' : `<img src="${d.url}" alt="img">`;
                         publicHtml += `
@@ -633,8 +677,7 @@
                             </div>
                         </div>`;
                     }
-
-                    // 2. Admin Pending List
+                    // Admin Pending
                     if(d.status === 'pending') {
                         pendingHtml += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
                             <div style="font-weight:600;">${d.title}</div><small>${d.uploader}</small>
@@ -645,12 +688,11 @@
                                 <button onclick="window.deleteFile('${d.id}')" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>
                             </div></div>`;
                     }
-
-                    // 3. My History (If logged in)
+                    // My History
                     if(currentUser && d.uploader === currentUser.displayName) {
                         let badge = d.status === 'approved' ? 'st-approved' : (d.status === 'rejected' ? 'st-rejected' : 'st-pending');
                         let icon = d.status === 'approved' ? '<i class="fas fa-check"></i>' : (d.status === 'rejected' ? '<i class="fas fa-times"></i>' : '<i class="fas fa-clock"></i>');
-                        myHistoryHtml += `<div class="status-row"><div style="font-weight:500; font-size:0.9rem;">${d.title}</div><span class="status-badge ${badge}">${icon} ${d.status}</span></div>`;
+                        myHistoryHtml += `<div class="status-row"><div style="font-weight:500; font-size:0.85rem;">${d.title}</div><span class="status-badge ${badge}">${icon} ${d.status}</span></div>`;
                     }
                 });
 
@@ -660,7 +702,6 @@
             });
         }
 
-        // Notices
         onSnapshot(query(collection(db, "notices"), orderBy("timestamp", "desc")), (snap) => {
             let html = "";
             snap.forEach(doc => {
@@ -679,7 +720,6 @@
             document.getElementById('public-notices').innerHTML = html || '<p>No notices.</p>';
         });
 
-        // Drive
         onSnapshot(query(collection(db, "drive_links"), orderBy("timestamp", "desc")), (s) => {
             let html = "";
             let adminHtml = "";
@@ -691,7 +731,7 @@
             document.getElementById('admin-drive-list').innerHTML = adminHtml;
         });
 
-        function loadAdminDrive() { /* Handled in main listener above for simplicity */ }
+        function loadAdminDrive() { /* Handled in main listener above */ }
     </script>
 </body>
 </html>
