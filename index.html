@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>StudentHub - Mobile</title>
+    <title>StudentHub - Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -64,6 +64,7 @@
             display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
         }
         
+        /* Profile */
         .profile-container { position: relative; display: none; align-items: center; cursor: pointer; gap: 8px; }
         .profile-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
         .profile-dropdown {
@@ -110,6 +111,7 @@
         }
         .hero h1 { margin: 0 0 5px; font-size: 1.6rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
+        /* Notices */
         .notices-grid { display: grid; gap: 0.8rem; }
         .notice-card {
             background: white; border-radius: 12px; padding: 1.2rem;
@@ -120,6 +122,7 @@
         .admin-del-notice { position: absolute; top: 10px; right: 10px; color: #ef4444; background: none; border: none; font-size: 1.1rem; padding: 5px; cursor: pointer; display: none; }
         body.is-admin .admin-del-notice { display: block; }
 
+        /* Files Tabs */
         .file-tabs-container {
             background: #e2e8f0; padding: 4px; border-radius: 12px;
             display: flex; margin-bottom: 1.5rem; width: 100%; 
@@ -133,6 +136,7 @@
         .file-sub-view { display: none; }
         .file-sub-view.active { display: block; animation: fadeIn 0.3s ease; }
 
+        /* File Card */
         .file-list { display: flex; flex-direction: column; gap: 10px; }
         .file-card {
             background: white; border: 1px solid var(--border);
@@ -148,13 +152,26 @@
         .file-actions { display: flex; gap: 10px; margin-top: auto; }
         .action-link { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--primary); cursor: pointer; padding: 4px 0; }
 
-        /* Admin Buttons on Files */
-        .admin-controls { position: absolute; top: 5px; right: 5px; display: none; gap: 5px; z-index: 10; }
-        .admin-btn-sm { border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; }
-        .btn-del { background: #fee2e2; color: #b91c1c; }
-        .btn-edit { background: #e0e7ff; color: #4338ca; }
+        /* ADMIN CONTROLS (Rename & Delete) - NEW STYLES */
+        .admin-controls { 
+            position: absolute; top: 5px; right: 5px; 
+            display: none; gap: 6px; z-index: 10; 
+        }
+        .admin-btn-sm { 
+            border: none; width: 28px; height: 28px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; color: white; font-size: 0.8rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn-del { background: #ef4444; }
+        .btn-edit { background: #6366f1; }
+        
         body.is-admin .admin-controls { display: flex; }
+        body.is-admin .admin-del-file { display: flex; } /* Fallback for Drive Links */
 
+        .admin-del-file { position: absolute; top: 5px; right: 5px; background: #fee2e2; color: #b91c1c; border: none; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
+
+        /* Status & Drive */
         .status-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
         .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display:flex; align-items:center; gap:4px; }
         .st-pending { background: #fef3c7; color: #d97706; }
@@ -170,7 +187,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-box { background: white; padding: 2rem; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
 
-        /* PREVIEW MODAL */
+        /* Preview Modal */
         .preview-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: none; flex-direction: column; }
         .preview-header { padding: 10px 15px; display: flex; justify-content: space-between; color: white; background: rgba(0,0,0,0.5); align-items: center; }
         .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 5px; overflow: hidden; position: relative; }
@@ -337,7 +354,7 @@
                         <textarea id="admin-msg" rows="3" placeholder="Write announcement..."></textarea>
                         <button onclick="window.postNotice()" class="auth-btn" style="width:100%; justify-content:center;">Post</button>
                     </div>
-                    <!-- RESTORED: Add Sub-Admin -->
+                    <!-- Sub-Admin Manage -->
                     <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
                         <h4>Manage Admins</h4>
                         <div style="display:flex; gap:5px; margin-bottom:10px;">
@@ -543,7 +560,7 @@
         }
         window.logoutAdmin = () => { isAdmin = false; document.body.classList.remove('is-admin'); if(statsUnsub) statsUnsub(); window.nav('home'); window.toast("Exited Admin"); }
 
-        // Added back: Add Sub Admin Function
+        // SUB ADMINS
         window.addSubAdmin = async () => {
             const email = document.getElementById('sub-admin-email').value;
             if(!email) return window.toast("Enter email", "error");
@@ -552,7 +569,6 @@
             window.toast("Admin added", "success");
         }
 
-        // Added back: Load Admin List
         function loadAdminList() {
             onSnapshot(collection(db, "admins"), (snap) => {
                 let html = "";
@@ -579,7 +595,7 @@
             });
         }
 
-        // UPLOAD (STRICT VALIDATION ADDED)
+        // UPLOAD (STRICT VALIDATION)
         window.uploadFile = async () => {
             if(!currentUser) return window.toast("Login required", "error");
             const files = document.getElementById('file-input').files;
@@ -593,12 +609,7 @@
 
             for(let i=0; i<files.length; i++) {
                 const file = files[i];
-                
-                // Strict JS Validation
-                if(!allowedTypes.includes(file.type)) {
-                    window.toast(`Skipped ${file.name}: Invalid Type`, "error");
-                    continue;
-                }
+                if(!allowedTypes.includes(file.type)) { window.toast(`Skipped ${file.name}: Invalid Type`, "error"); continue; }
 
                 document.getElementById('progress-text').innerText = `Uploading ${i+1}/${files.length}`;
                 document.getElementById('progress-bar').style.width = '30%';
@@ -612,8 +623,6 @@
                 try {
                     const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: formData });
                     const data = await res.json();
-                    if(data.error) throw new Error(data.error.message);
-                    
                     document.getElementById('progress-bar').style.width = '100%';
                     await addDoc(collection(db, "files"), {
                         title, url: data.secure_url, type, uploader: currentUser.displayName, 
@@ -636,7 +645,7 @@
         window.deleteNotice = (id) => window.conf("Delete notice?", async () => { await deleteDoc(doc(db, "notices", id)); window.toast("Deleted", "info"); });
         window.deleteDrive = (id) => window.conf("Delete link?", async () => { await deleteDoc(doc(db, "drive_links", id)); window.toast("Deleted", "info"); });
         
-        // NEW: Rename Function
+        // RENAME
         window.renameFile = async (id, oldName) => {
             const newName = prompt("Rename file:", oldName);
             if(newName && newName !== oldName) {
