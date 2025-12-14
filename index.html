@@ -31,7 +31,7 @@
             padding-bottom: 90px; 
         }
 
-        /* --- Navbar (Top) --- */
+        /* --- Navbar --- */
         nav { 
             background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
@@ -77,7 +77,7 @@
         .pd-item { padding: 12px 15px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .pd-item:last-child { border-bottom: none; color: #ef4444; }
 
-        /* --- Mobile Nav (Bottom) --- */
+        /* --- Mobile Nav --- */
         .mobile-nav {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
             background: white; border-top: 1px solid var(--border);
@@ -166,12 +166,14 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
         .modal-box { background: white; padding: 2rem; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
 
-        /* Preview Modal */
+        /* PREVIEW MODAL */
         .preview-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: none; flex-direction: column; }
-        .preview-header { padding: 15px; display: flex; justify-content: space-between; color: white; background: rgba(0,0,0,0.5); align-items: center; }
-        .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px; overflow: hidden; position: relative; }
+        .preview-header { padding: 10px 15px; display: flex; justify-content: space-between; color: white; background: rgba(0,0,0,0.5); align-items: center; }
+        .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 5px; overflow: hidden; position: relative; }
+        .preview-content iframe, .preview-content object { width: 100%; height: 100%; border: none; background: white; }
         .preview-content img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .preview-content iframe { width: 100%; height: 100%; background: white; border: none; }
+        .preview-actions { display: flex; gap: 10px; }
+        .preview-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
 
         .toast-box { position: fixed; bottom: 80px; right: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 4000; pointer-events: none; }
         .toast { background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-left: 4px solid var(--primary); animation: slideIn 0.3s; font-size: 0.9rem; font-weight: 500; text-align: center; pointer-events: auto; }
@@ -206,12 +208,11 @@
 </head>
 <body>
 
-    <!-- NAVBAR (Top) -->
+    <!-- NAVBAR -->
     <nav>
         <div class="logo" onclick="window.nav('home')">
             <i class="fas fa-graduation-cap"></i> StudentHub
         </div>
-        
         <div class="desktop-menu">
             <button class="menu-item active" onclick="window.nav('home')">Home</button>
             <button class="menu-item" onclick="window.nav('files')">Library</button>
@@ -219,62 +220,43 @@
             <button class="menu-item" onclick="window.nav('about')">About</button>
             <button class="menu-item admin-lock" onclick="window.handleAdminClick()">Admin</button>
         </div>
-        
         <div style="display:flex; align-items:center; gap:10px;">
-            <button id="login-btn" class="auth-btn" onclick="window.googleLogin()">
-                <i class="fab fa-google"></i> Login
-            </button>
-            
+            <button id="login-btn" class="auth-btn" onclick="window.googleLogin()">Login</button>
             <div id="profile-container" class="profile-container" onclick="window.toggleProfile()">
                 <img id="user-avatar" src="" alt="Profile" class="profile-img">
                 <div class="profile-dropdown" id="profile-dropdown">
-                    <div class="pd-item" style="cursor:default; font-weight:600; color:#333;">
-                        <span id="user-name-display">User</span>
-                    </div>
-                    <div class="pd-item" onclick="window.logout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </div>
+                    <div class="pd-item" style="cursor:default; font-weight:600; color:#333;"><span id="user-name-display">User</span></div>
+                    <div class="pd-item" onclick="window.logout()">Logout</div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- MAIN CONTENT -->
     <div class="container">
-
-        <!-- === HOME === -->
+        <!-- HOME -->
         <div id="home" class="section active">
             <div class="hero">
                 <h1>Welcome, Student!</h1>
-                <p style="color:var(--text-light); margin:0; font-size:0.95rem;">Access your notes, papers, and important updates in one place.</p>
+                <p style="color:var(--text-light); margin:0;">Access your notes and updates.</p>
             </div>
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
                 <i class="fas fa-bullhorn" style="color:var(--secondary); font-size:1.3rem;"></i>
                 <h3 style="margin:0;">Notice Board</h3>
             </div>
-            <div id="public-notices" class="notices-grid">
-                <div class="notice-card" style="justify-content:center; color:#999;">Loading...</div>
-            </div>
+            <div id="public-notices" class="notices-grid"><div class="notice-card" style="justify-content:center; color:#999;">Loading...</div></div>
         </div>
 
-        <!-- === LIBRARY === -->
+        <!-- LIBRARY -->
         <div id="files" class="section">
-            <div style="text-align:center; margin-bottom: 15px;">
-                <h2>Resource Library</h2>
-            </div>
-
+            <div style="text-align:center; margin-bottom: 15px;"><h2>Resource Library</h2></div>
             <div class="file-tabs-container">
                 <button class="file-tab-btn active" onclick="window.switchFileView('browse')">Browse</button>
                 <button class="file-tab-btn" onclick="window.switchFileView('upload')">Upload / Status</button>
             </div>
-
             <div id="view-browse" class="file-sub-view active">
                 <input type="text" class="search-bar" placeholder="🔍 Search materials..." onkeyup="window.filterFiles(this.value)">
-                <div id="public-gallery" class="file-list">
-                    <p style="text-align:center; color:#999;">Loading files...</p>
-                </div>
+                <div id="public-gallery" class="file-list"><p style="text-align:center; color:#999;">Loading files...</p></div>
             </div>
-
             <div id="view-upload" class="file-sub-view">
                 <div style="background:white; padding:1.5rem; border-radius:20px; text-align:center; border:2px dashed #cbd5e1; margin-bottom:1.5rem;">
                     <i class="fas fa-cloud-upload-alt" style="font-size:2.5rem; color:var(--primary); margin-bottom:10px;"></i>
@@ -288,38 +270,31 @@
                     </div>
                     <button id="upload-btn-el" onclick="window.uploadFile()" class="auth-btn" style="width:100%; justify-content:center;">Upload Now</button>
                 </div>
-
-                <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-                    <i class="fas fa-history" style="color:var(--text-main);"></i><h4 style="margin:0;">My History</h4>
-                </div>
-                <div id="my-status-list">
-                    <p style="text-align:center; color:#999; font-size:0.9rem;">Login to view your history.</p>
-                </div>
+                <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;"><i class="fas fa-history" style="color:var(--text-main);"></i><h4 style="margin:0;">My History</h4></div>
+                <div id="my-status-list"><p style="text-align:center; color:#999; font-size:0.9rem;">Login to view your history.</p></div>
             </div>
         </div>
 
-        <!-- === BACKUP === -->
+        <!-- BACKUP -->
         <div id="drive" class="section">
             <div style="text-align:center; margin-bottom: 2rem;">
                 <h2><i class="fab fa-google-drive" style="color:#10b981;"></i> Cloud Backup</h2>
-                <p style="color:var(--text-light); font-size:0.9rem;">Fallback links if database is offline.</p>
+                <p style="color:var(--text-light); font-size:0.9rem;">Fallback links.</p>
             </div>
             <div id="drive-links-list" class="drive-container"><p style="text-align:center; color:#888;">Checking backups...</p></div>
         </div>
 
-        <!-- === ABOUT === -->
+        <!-- ABOUT -->
         <div id="about" class="section">
             <div style="background:white; padding:30px; border-radius:24px; text-align:center; max-width:600px; margin:0 auto; box-shadow:var(--shadow);">
                 <i class="fas fa-graduation-cap" style="font-size:3.5rem; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:1rem;"></i>
                 <h2>StudentHub</h2>
-                <p style="line-height:1.6; color:var(--text-light); font-size:0.95rem;">A centralized platform for academic resource sharing.</p>
-                <div style="margin-top:25px; border-top:1px solid var(--border); padding-top:15px;">
-                    <small>Developed by</small><h4 style="margin:5px 0; color:var(--primary);">Sabbir Ahmed Rakib</h4><small style="color:var(--text-light);">&copy; 2024</small>
-                </div>
+                <p style="line-height:1.6; color:var(--text-light);">A centralized platform for academic resource sharing.</p>
+                <div style="margin-top:25px; border-top:1px solid var(--border); padding-top:15px;"><small>Developed by</small><h4 style="margin:5px 0; color:var(--primary);">Sabbir Ahmed Rakib</h4><small style="color:var(--text-light);">&copy; 2024</small></div>
             </div>
         </div>
 
-        <!-- === ADMIN === -->
+        <!-- ADMIN -->
         <div id="admin-dash" class="section">
             <div style="background:var(--text-main); color:white; padding:1.2rem; border-radius:16px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
                 <h3><i class="fas fa-shield-alt"></i> Admin</h3>
@@ -354,7 +329,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAV (Mobile Only) -->
+    <!-- MOBILE NAV -->
     <div class="mobile-nav">
         <button class="mob-link active" onclick="window.nav('home')"><i class="fas fa-home"></i> Home</button>
         <button class="mob-link" onclick="window.nav('files')"><i class="fas fa-book"></i> Library</button>
@@ -363,7 +338,7 @@
         <button class="mob-link" onclick="window.handleAdminClick()"><i class="fas fa-user-shield"></i> Admin</button>
     </div>
 
-    <!-- Modals -->
+    <!-- MODALS -->
     <div id="admin-modal" class="modal-overlay">
         <div class="modal-box">
             <h3>Admin Access</h3>
@@ -377,7 +352,9 @@
     <div id="preview-modal" class="preview-overlay">
         <div class="preview-header">
             <h4 id="preview-title" style="margin:0;">Preview</h4>
-            <div style="display:flex; align-items:center; gap:10px;">
+            <div class="preview-actions">
+                <button class="preview-btn" onclick="window.switchPreviewMode('google')">Google View</button>
+                <button class="preview-btn" onclick="window.switchPreviewMode('native')">Native View</button>
                 <button onclick="window.closePreview()" style="background:none; border:none; color:white; font-size:1.8rem; cursor:pointer;">&times;</button>
             </div>
         </div>
@@ -393,6 +370,7 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // IMPORTANT: Use your own Unsigned Preset
         const firebaseConfig = {
             apiKey: "AIzaSyA3fovDzCF_3mCFD4yGsvgCFfan_tuDc3Y",
             authDomain: "studenthub-599bf.firebaseapp.com",
@@ -413,15 +391,14 @@
         let isAdmin = false;
         let presenceInterval = null;
         let statsUnsub = null;
+        let currentPreviewUrl = '';
+        let currentPreviewType = '';
 
-        // --- NAVIGATION ---
         window.nav = (id) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id === 'admin' ? 'admin-dash' : id).classList.add('active');
-            
             document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.mob-link').forEach(b => b.classList.remove('active'));
-            
             const idx = ['home', 'files', 'drive', 'about', 'admin'].indexOf(id);
             if(idx > -1) {
                 if(document.querySelectorAll('.menu-item')[idx]) document.querySelectorAll('.menu-item')[idx].classList.add('active');
@@ -440,9 +417,7 @@
 
         window.toggleProfile = () => document.getElementById('profile-dropdown').classList.toggle('show');
         window.onclick = (e) => {
-            if (!e.target.matches('.profile-img') && !e.target.matches('.profile-container')) {
-                document.getElementById('profile-dropdown').classList.remove('show');
-            }
+            if (!e.target.matches('.profile-img') && !e.target.matches('.profile-container')) document.getElementById('profile-dropdown').classList.remove('show');
         }
 
         window.toast = (msg, type='info') => {
@@ -461,29 +436,35 @@
             });
         }
 
-        // --- PREVIEW LOGIC (Updated with Google Docs Viewer) ---
+        // PREVIEW LOGIC
         window.openPreview = (url, type, title) => {
-            const modal = document.getElementById('preview-modal');
-            const body = document.getElementById('preview-body');
-            const fallback = document.getElementById('preview-fallback');
+            currentPreviewUrl = url;
+            currentPreviewType = type;
             document.getElementById('preview-title').innerText = title;
-            
-            modal.style.display = 'flex';
-            fallback.innerHTML = `<a href="${url}" target="_blank" style="color:white; text-decoration:underline;">Open Original File</a>`;
-            
-            if(type === 'PDF') {
-                // Use Google Docs Viewer for reliable PDF rendering
-                body.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true" style="width:100%; height:100%; background:white; border:none;"></iframe>`;
+            document.getElementById('preview-modal').style.display = 'flex';
+            document.getElementById('preview-fallback').innerHTML = `<a href="${url}" target="_blank" style="color:white; text-decoration:underline;">Open Original File</a>`;
+            window.switchPreviewMode('google'); // Default to Google for mobile stability
+        }
+
+        window.switchPreviewMode = (mode) => {
+            const body = document.getElementById('preview-body');
+            if(currentPreviewType === 'PDF') {
+                if(mode === 'google') {
+                    body.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(currentPreviewUrl)}&embedded=true"></iframe>`;
+                } else {
+                    body.innerHTML = `<object data="${currentPreviewUrl}" type="application/pdf" width="100%" height="100%"><p style="color:white">Cannot embed. Use "Open Original".</p></object>`;
+                }
             } else {
-                body.innerHTML = `<img src="${url}" alt="preview">`;
+                body.innerHTML = `<img src="${currentPreviewUrl}" alt="preview">`;
             }
         }
+
         window.closePreview = () => {
             document.getElementById('preview-modal').style.display = 'none';
             document.getElementById('preview-body').innerHTML = '';
         }
 
-        // --- AUTH ---
+        // AUTH
         window.googleLogin = () => signInWithPopup(auth, provider).catch(e => window.toast(e.message, 'error'));
         window.logout = () => signOut(auth).then(() => window.location.reload());
 
@@ -494,14 +475,13 @@
                 document.getElementById('profile-container').style.display = 'flex';
                 document.getElementById('user-avatar').src = user.photoURL || 'https://via.placeholder.com/40';
                 document.getElementById('user-name-display').innerText = user.displayName;
-                
                 checkSubAdmin(user.email);
                 registerUser(user);
                 startPresence(user);
-                loadAllFiles(); 
+                loadAllFiles();
             } else {
                 if(presenceInterval) clearInterval(presenceInterval);
-                loadAllFiles(); 
+                loadAllFiles();
             }
         });
 
@@ -517,56 +497,34 @@
             window.addEventListener('beforeunload', () => deleteDoc(ref));
         }
 
-        // --- ADMIN ---
+        // ADMIN
         window.handleAdminClick = () => isAdmin ? window.nav('admin') : document.getElementById('admin-modal').style.display = 'flex';
-        
         window.verifyAdmin = () => {
             if(document.getElementById('admin-user').value === "Rakib" && document.getElementById('admin-pass').value === "adminrakib") {
-                activateAdmin();
-                document.getElementById('admin-modal').style.display = 'none';
-                window.toast("Unlocked", "success");
+                activateAdmin(); document.getElementById('admin-modal').style.display = 'none'; window.toast("Unlocked", "success");
             } else { window.toast("Invalid", "error"); }
         }
-
         async function checkSubAdmin(email) {
             const snap = await getDocs(query(collection(db, "admins"), where("email", "==", email)));
             if(!snap.empty) { activateAdmin(); window.toast("Admin Access", "success"); }
         }
-
         function activateAdmin() {
-            isAdmin = true;
-            document.body.classList.add('is-admin');
-            window.nav('admin');
-            loadStats();
-            loadAllFiles();
-            loadAdminDrive();
+            isAdmin = true; document.body.classList.add('is-admin'); window.nav('admin');
+            loadStats(); loadAllFiles(); loadAdminDrive();
         }
-
-        window.logoutAdmin = () => { 
-            isAdmin = false; 
-            document.body.classList.remove('is-admin'); 
-            if(statsUnsub) statsUnsub(); 
-            window.nav('home'); 
-            window.toast("Exited Admin"); 
-        }
+        window.logoutAdmin = () => { isAdmin = false; document.body.classList.remove('is-admin'); if(statsUnsub) statsUnsub(); window.nav('home'); window.toast("Exited Admin"); }
 
         async function loadStats() {
             const snap = await getCountFromServer(collection(db, "users"));
             document.getElementById('stat-total-users').innerText = snap.data().count;
-
             statsUnsub = onSnapshot(collection(db, "presence"), (snapshot) => {
                 const now = Date.now();
-                const threshold = 2 * 60 * 1000;
-                let activeCount = 0;
-                let html = "";
+                let activeCount = 0; let html = "";
                 snapshot.forEach(doc => {
                     const data = doc.data();
                     if (data.lastActive) {
                         const lastSeen = data.lastActive.toMillis ? data.lastActive.toMillis() : Date.now();
-                        if (now - lastSeen < threshold) {
-                            activeCount++;
-                            html += `<div><span class="online-dot"></span> ${data.email}</div>`;
-                        }
+                        if (now - lastSeen < 120000) { activeCount++; html += `<div><span class="online-dot"></span> ${data.email}</div>`; }
                     }
                 });
                 document.getElementById('stat-active-users').innerText = activeCount;
@@ -574,7 +532,7 @@
             });
         }
 
-        // --- UPLOAD ---
+        // UPLOAD (UPDATED TO AUTO)
         window.uploadFile = async () => {
             if(!currentUser) return window.toast("Login required", "error");
             const files = document.getElementById('file-input').files;
@@ -596,27 +554,30 @@
                 formData.append('upload_preset', UPLOAD_PRESET);
 
                 try {
-                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`, { method: 'POST', body: formData });
+                    // Use 'auto' endpoint to avoid 401 on PDFs
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: formData });
                     const data = await res.json();
+                    if(data.error) throw new Error(data.error.message);
+                    
                     document.getElementById('progress-bar').style.width = '100%';
                     await addDoc(collection(db, "files"), {
                         title, url: data.secure_url, type, uploader: currentUser.displayName, 
                         status: isAdmin ? 'approved' : 'pending', timestamp: serverTimestamp()
                     });
-                } catch(e) { window.toast("Upload error", "error"); }
+                } catch(e) { window.toast("Upload error: " + e.message, "error"); }
             }
-            window.toast(isAdmin ? "Posted" : "Submitted for Review", "success");
+            window.toast(isAdmin ? "Posted" : "Submitted", "success");
             document.getElementById('file-title').value = '';
             document.getElementById('file-input').value = '';
             document.getElementById('progress-container').style.display = 'none';
             document.getElementById('upload-btn-el').disabled = false;
         }
 
-        // --- ACTIONS ---
+        // ACTIONS
         window.conf = (msg, cb) => { if(confirm(msg)) setTimeout(()=> { if(confirm("Confirm action?")) cb(); }, 100); }
         window.approve = (id) => window.conf("Approve file?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); window.toast("Approved", "success"); });
-        window.rejectFile = (id) => window.conf("Mark as Rejected?", async () => { await updateDoc(doc(db, "files", id), { status: 'rejected' }); window.toast("Rejected", "info"); });
-        window.deleteFile = (id) => window.conf("Permanently Delete?", async () => { await deleteDoc(doc(db, "files", id)); window.toast("Deleted", "info"); });
+        window.rejectFile = (id) => window.conf("Reject file?", async () => { await updateDoc(doc(db, "files", id), { status: 'rejected' }); window.toast("Rejected", "info"); });
+        window.deleteFile = (id) => window.conf("Delete permanently?", async () => { await deleteDoc(doc(db, "files", id)); window.toast("Deleted", "info"); });
         window.deleteNotice = (id) => window.conf("Delete notice?", async () => { await deleteDoc(doc(db, "notices", id)); window.toast("Deleted", "info"); });
         window.deleteDrive = (id) => window.conf("Delete link?", async () => { await deleteDoc(doc(db, "drive_links", id)); window.toast("Deleted", "info"); });
 
@@ -633,58 +594,30 @@
             document.getElementById('drive-title').value = ''; document.getElementById('drive-url').value = ''; window.toast("Added", "success");
         }
 
-        // --- DATA LOADERS ---
+        // LOADERS
         function loadAllFiles() {
             onSnapshot(collection(db, "files"), (snap) => {
-                let publicHtml = "";
-                let pendingHtml = "";
-                let myHistoryHtml = "";
-                
+                let publicHtml = "", pendingHtml = "", myHtml = "";
                 const allFiles = [];
                 snap.forEach(doc => allFiles.push({ id: doc.id, ...doc.data() }));
                 allFiles.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                 allFiles.forEach(d => {
-                    // Public
                     if(d.status === 'approved') {
                         const icon = d.type === 'PDF' ? '<i class="fas fa-file-pdf" style="color:#ef4444; font-size:2rem;"></i>' : `<img src="${d.url}" alt="img">`;
-                        publicHtml += `
-                        <div class="file-card">
-                            <button class="admin-del-file" onclick="window.deleteFile('${d.id}')"><i class="fas fa-trash"></i></button>
-                            <div class="file-preview">${icon}</div>
-                            <div class="file-info">
-                                <div class="file-title">${d.title}</div>
-                                <div class="file-meta">${d.type} • By ${d.uploader}</div>
-                                <div class="file-actions">
-                                    <span class="action-link" onclick="window.openPreview('${d.url}', '${d.type}', '${d.title}')">Preview</span>
-                                    <span style="color:#ddd">|</span>
-                                    <a href="${d.url}" class="action-link" download>Download</a>
-                                </div>
-                            </div>
-                        </div>`;
+                        publicHtml += `<div class="file-card"><button class="admin-del-file" onclick="window.deleteFile('${d.id}')"><i class="fas fa-trash"></i></button><div class="file-preview">${icon}</div><div class="file-info"><div class="file-title">${d.title}</div><div class="file-meta">${d.type} • ${d.uploader}</div><div class="file-actions"><span class="action-link" onclick="window.openPreview('${d.url}', '${d.type}', '${d.title}')">Preview</span><span style="color:#ddd">|</span><a href="${d.url}" class="action-link" download target="_blank">Download</a></div></div></div>`;
                     }
-                    // Admin Pending
                     if(d.status === 'pending') {
-                        pendingHtml += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
-                            <div style="font-weight:600;">${d.title}</div><small>${d.uploader}</small>
-                            <div style="display:flex; gap:10px; margin-top:5px;">
-                                <button onclick="window.openPreview('${d.url}','${d.type}','${d.title}')" style="cursor:pointer;">View</button>
-                                <button onclick="window.approve('${d.id}')" style="color:green; cursor:pointer;">Approve</button>
-                                <button onclick="window.rejectFile('${d.id}')" style="color:orange; cursor:pointer;">Reject</button>
-                                <button onclick="window.deleteFile('${d.id}')" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                            </div></div>`;
+                        pendingHtml += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;"><div style="font-weight:600;">${d.title}</div><small>${d.uploader}</small><div style="display:flex; gap:10px; margin-top:5px;"><button onclick="window.openPreview('${d.url}','${d.type}','${d.title}')" style="cursor:pointer;">View</button><button onclick="window.approve('${d.id}')" style="color:green; cursor:pointer;">Approve</button><button onclick="window.rejectFile('${d.id}')" style="color:orange; cursor:pointer;">Reject</button><button onclick="window.deleteFile('${d.id}')" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`;
                     }
-                    // My History
                     if(currentUser && d.uploader === currentUser.displayName) {
                         let badge = d.status === 'approved' ? 'st-approved' : (d.status === 'rejected' ? 'st-rejected' : 'st-pending');
-                        let icon = d.status === 'approved' ? '<i class="fas fa-check"></i>' : (d.status === 'rejected' ? '<i class="fas fa-times"></i>' : '<i class="fas fa-clock"></i>');
-                        myHistoryHtml += `<div class="status-row"><div style="font-weight:500; font-size:0.85rem;">${d.title}</div><span class="status-badge ${badge}">${icon} ${d.status}</span></div>`;
+                        myHtml += `<div class="status-row"><div style="font-weight:500; font-size:0.85rem;">${d.title}</div><span class="status-badge ${badge}">${d.status}</span></div>`;
                     }
                 });
-
                 document.getElementById('public-gallery').innerHTML = publicHtml || '<p style="text-align:center;">No files found.</p>';
                 document.getElementById('admin-pending-list').innerHTML = pendingHtml || 'No pending items.';
-                document.getElementById('my-status-list').innerHTML = myHistoryHtml || '<p style="text-align:center; color:#999;">No uploads yet.</p>';
+                document.getElementById('my-status-list').innerHTML = myHtml || '<p style="text-align:center; color:#999;">No uploads yet.</p>';
             });
         }
 
@@ -693,31 +626,22 @@
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString() : 'Today';
-                html += `
-                <div class="notice-card">
-                    <button class="admin-del-notice" onclick="window.deleteNotice('${doc.id}')"><i class="fas fa-trash"></i></button>
-                    <div class="notice-icon"><i class="fas fa-bell"></i></div>
-                    <div class="notice-content">
-                        <div class="notice-msg">${d.message}</div>
-                        <div class="notice-meta"><span><i class="far fa-calendar-alt"></i> ${date}</span><span>• ${d.author}</span></div>
-                    </div>
-                </div>`;
+                html += `<div class="notice-card"><button class="admin-del-notice" onclick="window.deleteNotice('${doc.id}')"><i class="fas fa-trash"></i></button><div class="notice-icon"><i class="fas fa-bell"></i></div><div class="notice-content"><div class="notice-msg">${d.message}</div><div class="notice-meta"><span><i class="far fa-calendar-alt"></i> ${date}</span><span>• ${d.author}</span></div></div></div>`;
             });
             document.getElementById('public-notices').innerHTML = html || '<p>No notices.</p>';
         });
 
         onSnapshot(query(collection(db, "drive_links"), orderBy("timestamp", "desc")), (s) => {
-            let html = "";
-            let adminHtml = "";
+            let html = "", adminHtml = "";
             s.forEach(d => {
                 html += `<a href="${d.data().url}" target="_blank" class="drive-card"><i class="fab fa-google-drive" style="color:#10b981; font-size:1.5rem;"></i><span>${d.data().title}</span> <button class="admin-del-file" onclick="event.preventDefault(); window.deleteDrive('${d.id}')"><i class="fas fa-trash"></i></button></a>`;
                 adminHtml += `<div>${d.data().title} <span style="color:red; cursor:pointer;" onclick="window.deleteDrive('${d.id}')">X</span></div>`;
             });
-            document.getElementById('drive-links-list').innerHTML = html || '<p style="text-align:center; color:#888;">No backup links available.</p>';
+            document.getElementById('drive-links-list').innerHTML = html || '<p style="text-align:center; color:#888;">No links.</p>';
             document.getElementById('admin-drive-list').innerHTML = adminHtml;
         });
 
-        function loadAdminDrive() { /* Handled in main listener above */ }
+        function loadAdminDrive() {} 
     </script>
 </body>
 </html>
