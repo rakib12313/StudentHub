@@ -152,31 +152,28 @@
         .file-actions { display: flex; gap: 10px; margin-top: auto; }
         .action-link { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--primary); cursor: pointer; padding: 4px 0; }
 
-        /* ADMIN CONTROLS (Rename & Delete) - NEW STYLES */
-        .admin-controls { 
-            position: absolute; top: 5px; right: 5px; 
-            display: none; gap: 6px; z-index: 10; 
-        }
-        .admin-btn-sm { 
-            border: none; width: 28px; height: 28px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; color: white; font-size: 0.8rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        /* Admin/User Controls */
+        .admin-controls { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; }
+        .admin-btn-sm { border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .btn-del { background: #ef4444; }
         .btn-edit { background: #6366f1; }
         
         body.is-admin .admin-controls { display: flex; }
-        body.is-admin .admin-del-file { display: flex; } /* Fallback for Drive Links */
+        body.is-admin .admin-del-file { display: flex; }
 
         .admin-del-file { position: absolute; top: 5px; right: 5px; background: #fee2e2; color: #b91c1c; border: none; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
 
-        /* Status & Drive */
+        /* Status & History */
         .status-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
-        .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display:flex; align-items:center; gap:4px; }
+        .status-info { flex: 1; min-width: 0; }
+        .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display:inline-flex; align-items:center; gap:4px; margin-top: 4px; }
         .st-pending { background: #fef3c7; color: #d97706; }
         .st-approved { background: #dcfce7; color: #166534; }
         .st-rejected { background: #fee2e2; color: #b91c1c; }
+        .user-actions { display: flex; gap: 8px; }
+        .user-icon-btn { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; color: var(--text-light); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .user-icon-btn:hover { background: #e2e8f0; color: var(--primary); }
+        .btn-danger-light:hover { background: #fee2e2; color: #ef4444; }
 
         .drive-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
         .drive-card { background: white; padding: 18px; border-radius: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); font-weight: 600; }
@@ -203,6 +200,11 @@
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--text-main); color: white; padding: 15px; border-radius: 16px; text-align: center; }
         .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #4ade80; }
+
+        /* Admin List Style */
+        .admin-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        .admin-row:last-child { border-bottom: none; }
+        .btn-xs-del { background: #fee2e2; color: #ef4444; border: none; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
 
         @media (max-width: 850px) {
             .desktop-menu { display: none; }
@@ -435,11 +437,13 @@
         
         let currentUser = null;
         let isAdmin = false;
+        let isMaster = false; // Master Admin Flag
         let presenceInterval = null;
         let statsUnsub = null;
         let currentPreviewUrl = '';
         let currentPreviewType = '';
 
+        // GLOBAL UTILS
         window.nav = (id) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id === 'admin' ? 'admin-dash' : id).classList.add('active');
@@ -489,7 +493,7 @@
             document.getElementById('preview-title').innerText = title;
             document.getElementById('preview-modal').style.display = 'flex';
             document.getElementById('preview-fallback').innerHTML = `<a href="${url}" target="_blank" style="color:white; text-decoration:underline;">Open Original File</a>`;
-            window.switchPreviewMode('google'); // Default to Google for mobile stability
+            window.switchPreviewMode('google'); 
         }
 
         window.switchPreviewMode = (mode) => {
@@ -545,20 +549,30 @@
 
         // ADMIN
         window.handleAdminClick = () => isAdmin ? window.nav('admin') : document.getElementById('admin-modal').style.display = 'flex';
+        
         window.verifyAdmin = () => {
-            if(document.getElementById('admin-user').value === "Rakib" && document.getElementById('admin-pass').value === "adminrakib") {
-                activateAdmin(); document.getElementById('admin-modal').style.display = 'none'; window.toast("Unlocked", "success");
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+            if(u === "Rakib" && p === "adminrakib") {
+                isMaster = true; // Set Master Flag
+                activateAdmin(); document.getElementById('admin-modal').style.display = 'none'; window.toast("Master Unlocked", "success");
             } else { window.toast("Invalid", "error"); }
         }
+
         async function checkSubAdmin(email) {
             const snap = await getDocs(query(collection(db, "admins"), where("email", "==", email)));
             if(!snap.empty) { activateAdmin(); window.toast("Admin Access", "success"); }
         }
+
         function activateAdmin() {
             isAdmin = true; document.body.classList.add('is-admin'); window.nav('admin');
             loadStats(); loadAllFiles(); loadAdminDrive(); loadAdminList();
         }
-        window.logoutAdmin = () => { isAdmin = false; document.body.classList.remove('is-admin'); if(statsUnsub) statsUnsub(); window.nav('home'); window.toast("Exited Admin"); }
+
+        window.logoutAdmin = () => { 
+            isAdmin = false; isMaster = false;
+            document.body.classList.remove('is-admin'); if(statsUnsub) statsUnsub(); window.nav('home'); window.toast("Exited Admin"); 
+        }
 
         // SUB ADMINS
         window.addSubAdmin = async () => {
@@ -569,10 +583,23 @@
             window.toast("Admin added", "success");
         }
 
+        // NEW: Remove Admin (Master Only)
+        window.removeAdmin = async (id) => {
+            if(!isMaster) return window.toast("Master Admin only", "error");
+            if(confirm("Remove this admin?")) {
+                await deleteDoc(doc(db, "admins", id));
+                window.toast("Removed", "success");
+            }
+        }
+
         function loadAdminList() {
             onSnapshot(collection(db, "admins"), (snap) => {
                 let html = "";
-                snap.forEach(doc => html += `<div><i class="fas fa-user-shield" style="color:#6366f1"></i> ${doc.data().email}</div>`);
+                snap.forEach(doc => {
+                    // Only show delete button if Master Admin
+                    const delBtn = isMaster ? `<button onclick="window.removeAdmin('${doc.id}')" class="btn-xs-del">X</button>` : '';
+                    html += `<div class="admin-row"><div><i class="fas fa-user-shield" style="color:#6366f1; margin-right:5px;"></i> ${doc.data().email}</div>${delBtn}</div>`;
+                });
                 document.getElementById('admin-list').innerHTML = html || 'No sub-admins.';
             });
         }
@@ -595,7 +622,7 @@
             });
         }
 
-        // UPLOAD (STRICT VALIDATION)
+        // UPLOAD
         window.uploadFile = async () => {
             if(!currentUser) return window.toast("Login required", "error");
             const files = document.getElementById('file-input').files;
@@ -637,7 +664,7 @@
             document.getElementById('upload-btn-el').disabled = false;
         }
 
-        // ACTIONS
+        // ACTIONS (Global)
         window.conf = (msg, cb) => { if(confirm(msg)) setTimeout(()=> { if(confirm("Confirm action?")) cb(); }, 100); }
         window.approve = (id) => window.conf("Approve file?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); window.toast("Approved", "success"); });
         window.rejectFile = (id) => window.conf("Reject file?", async () => { await updateDoc(doc(db, "files", id), { status: 'rejected' }); window.toast("Rejected", "info"); });
@@ -645,12 +672,27 @@
         window.deleteNotice = (id) => window.conf("Delete notice?", async () => { await deleteDoc(doc(db, "notices", id)); window.toast("Deleted", "info"); });
         window.deleteDrive = (id) => window.conf("Delete link?", async () => { await deleteDoc(doc(db, "drive_links", id)); window.toast("Deleted", "info"); });
         
-        // RENAME
+        // ADMIN RENAME
         window.renameFile = async (id, oldName) => {
             const newName = prompt("Rename file:", oldName);
             if(newName && newName !== oldName) {
                 await updateDoc(doc(db, "files", id), { title: newName });
                 window.toast("Renamed", "success");
+            }
+        }
+
+        // NEW: User Actions
+        window.userRenameFile = async (id, oldName) => {
+            const newName = prompt("Rename your file:", oldName);
+            if(newName && newName !== oldName) {
+                await updateDoc(doc(db, "files", id), { title: newName });
+                window.toast("Renamed", "success");
+            }
+        }
+        window.userDeleteFile = async (id) => {
+            if(confirm("Delete your file permanently?")) {
+                await deleteDoc(doc(db, "files", id));
+                window.toast("File deleted", "info");
             }
         }
 
@@ -676,6 +718,7 @@
                 allFiles.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                 allFiles.forEach(d => {
+                    // Public List
                     if(d.status === 'approved') {
                         const icon = d.type === 'PDF' ? '<i class="fas fa-file-pdf" style="color:#ef4444; font-size:2rem;"></i>' : `<img src="${d.url}" alt="img">`;
                         publicHtml += `
@@ -696,12 +739,24 @@
                             </div>
                         </div>`;
                     }
+                    // Admin Pending
                     if(d.status === 'pending') {
                         pendingHtml += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;"><div style="font-weight:600;">${d.title}</div><small>${d.uploader}</small><div style="display:flex; gap:10px; margin-top:5px;"><button onclick="window.openPreview('${d.url}','${d.type}','${d.title}')" style="cursor:pointer;">View</button><button onclick="window.approve('${d.id}')" style="color:green; cursor:pointer;">Approve</button><button onclick="window.rejectFile('${d.id}')" style="color:orange; cursor:pointer;">Reject</button><button onclick="window.deleteFile('${d.id}')" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`;
                     }
+                    // My History
                     if(currentUser && d.uploader === currentUser.displayName) {
                         let badge = d.status === 'approved' ? 'st-approved' : (d.status === 'rejected' ? 'st-rejected' : 'st-pending');
-                        myHtml += `<div class="status-row"><div style="font-weight:500; font-size:0.85rem;">${d.title}</div><span class="status-badge ${badge}">${d.status}</span></div>`;
+                        myHtml += `
+                        <div class="status-row">
+                            <div class="status-info">
+                                <div style="font-weight:500; font-size:0.85rem;">${d.title}</div>
+                                <span class="status-badge ${badge}">${d.status}</span>
+                            </div>
+                            <div class="user-actions">
+                                <button onclick="window.userRenameFile('${d.id}', '${d.title}')" class="user-icon-btn"><i class="fas fa-pen"></i></button>
+                                <button onclick="window.userDeleteFile('${d.id}')" class="user-icon-btn btn-danger-light"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
                     }
                 });
                 document.getElementById('public-gallery').innerHTML = publicHtml || '<p style="text-align:center;">No files found.</p>';
