@@ -14,7 +14,7 @@
             --dark: #0f172a;          
             --bg: #f8fafc;            
             --surface: #ffffff;
-            --border: #e2e8f0;
+            --border: #cbd5e1;
             --text-main: #334155;
             --text-light: #64748b;
             --radius: 12px;
@@ -97,66 +97,75 @@
             box-shadow: var(--shadow-sm); transition: 0.3s;
         }
 
-        /* --- List View for Files (UPDATED) --- */
-        .grid-gallery { 
-            display: flex; flex-direction: column; gap: 12px;
-        }
-
+        /* --- FILE LIST VIEW (Optimized) --- */
+        .grid-gallery { display: flex; flex-direction: column; gap: 12px; }
+        
         .file-card {
             background: white; border: 1px solid var(--border);
             border-radius: var(--radius); overflow: hidden;
-            display: flex; flex-direction: row; /* Horizontal Layout */
-            height: 120px; /* Fixed height for consistency */
-            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex; flex-direction: row; height: 110px;
+            transition: transform 0.2s, box-shadow 0.2s; position: relative;
         }
-        
         .file-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-color: var(--primary); }
         
         .file-preview { 
-            width: 110px; /* Fixed width for thumbnail */
-            height: 100%;
-            background: #f1f5f9; 
+            width: 100px; height: 100%; background: #f1f5f9; 
             display: flex; align-items: center; justify-content: center; 
             overflow: hidden; border-right: 1px solid var(--border);
-            flex-shrink: 0; position: relative;
+            flex-shrink: 0;
         }
-        
         .file-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .file-type-icon { font-size: 2.5rem; color: #cbd5e1; }
+        .file-type-icon { font-size: 2.2rem; color: #cbd5e1; }
         
         .file-body { 
-            padding: 10px 15px; 
-            flex: 1; 
-            display: flex; flex-direction: column; justify-content: center;
-            min-width: 0; /* Prevents text overflow issues */
+            padding: 8px 12px; flex: 1; 
+            display: flex; flex-direction: column; justify-content: center; min-width: 0;
         }
         
         .file-badge { 
-            align-self: flex-start;
-            font-size: 0.65rem; padding: 2px 6px; 
+            align-self: flex-start; font-size: 0.6rem; padding: 2px 6px; 
             border-radius: 4px; background: var(--primary-light); color: var(--primary); 
             font-weight: 700; text-transform: uppercase; margin-bottom: 4px;
         }
+        .file-title { font-weight: 600; margin: 0 0 4px; font-size: 0.95rem; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-meta { font-size: 0.75rem; color: var(--text-light); margin-bottom: 6px; }
 
-        .file-title { 
-            font-weight: 600; margin: 0 0 4px; font-size: 1rem; color: var(--dark);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
-        .file-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 8px; }
-
-        .file-actions {
-            display: flex; gap: 8px; margin-top: auto;
-        }
+        .file-actions { display: flex; gap: 8px; margin-top: auto; }
         .action-btn {
-            flex: 1;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-            padding: 6px 10px; border-radius: 6px; text-decoration: none;
-            font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+            padding: 5px 10px; border-radius: 6px; text-decoration: none;
+            font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
         }
         .btn-view { background: #eff6ff; color: var(--primary); }
         .btn-view:hover { background: #dbeafe; }
         .btn-down { background: var(--dark); color: white; }
         .btn-down:hover { opacity: 0.9; }
+
+        /* Admin Delete Button (Hidden by default) */
+        .admin-only-btn {
+            display: none; /* Toggled via JS class on body */
+            position: absolute; top: 5px; right: 5px;
+            background: #ef4444; color: white; border: none;
+            width: 24px; height: 24px; border-radius: 50%;
+            cursor: pointer; align-items: center; justify-content: center;
+            font-size: 0.75rem; z-index: 10;
+        }
+        
+        /* When body has class .is-admin, show these buttons */
+        body.is-admin .admin-only-btn { display: flex; }
+
+        /* --- Stats Card --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+        .stat-box { background: #1e293b; color: white; padding: 15px; border-radius: 12px; text-align: center; }
+        .stat-num { font-size: 1.5rem; font-weight: 700; color: #818cf8; }
+        .online-dot { height: 8px; width: 8px; background-color: #10b981; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        /* --- Notices --- */
+        .notice-card { 
+            position: relative; margin-bottom:10px; padding:15px; 
+            border-left:4px solid var(--primary); background: white; 
+            border-radius: 8px; box-shadow: var(--shadow-sm); 
+        }
 
         /* --- Drive Links --- */
         .drive-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
@@ -164,13 +173,11 @@
             display: flex; align-items: center; gap: 12px;
             background: #fff; border: 1px solid var(--border);
             padding: 16px; border-radius: 12px; text-decoration: none;
-            color: var(--text-main); font-weight: 600; box-shadow: var(--shadow-sm);
+            color: var(--text-main); font-weight: 600; box-shadow: var(--shadow-sm); position: relative;
         }
-        .drive-icon-lg { color: #10b981; font-size: 1.8rem; }
 
         /* --- Inputs & Modals --- */
-        .search-bar { width: 100%; padding: 10px 15px; border-radius: 10px; border: 1px solid var(--border); background: white; margin-bottom: 1.5rem; font-family: inherit; font-size: 0.95rem; }
-        .search-bar:focus { border-color: var(--primary); }
+        .search-bar { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border); background: white; margin-bottom: 1.5rem; font-family: inherit; font-size: 0.95rem; }
         input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; }
 
         /* Preview Modal */
@@ -179,26 +186,17 @@
             background: rgba(0,0,0,0.92); z-index: 1000;
             display: none; flex-direction: column;
         }
-        .preview-header {
-            padding: 15px; display: flex; justify-content: space-between; align-items: center;
-            color: white; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-        }
-        .preview-content {
-            flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px; overflow: hidden;
-        }
+        .preview-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; color: white; background: rgba(0,0,0,0.6); }
+        .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px; overflow: hidden; }
         .preview-content img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .preview-content iframe { width: 100%; height: 100%; max-width: 800px; background: white; border: none; border-radius: 8px; }
 
-        /* Admin/Auth Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
             z-index: 200; display: none; align-items: center; justify-content: center;
         }
-        .modal-box {
-            background: white; padding: 2rem; border-radius: 16px;
-            width: 90%; max-width: 320px; text-align: center;
-        }
+        .modal-box { background: white; padding: 2rem; border-radius: 16px; width: 90%; max-width: 320px; text-align: center; }
 
         .toast-box { position: fixed; bottom: 80px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 300; }
         .toast {
@@ -208,13 +206,13 @@
         }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; }
-
+        
         @media (max-width: 768px) {
             .desktop-menu { display: none; }
             .mobile-nav { display: flex; }
             .grid-2 { grid-template-columns: 1fr; }
             .hero { padding: 2rem 1.5rem; }
-            .file-card { height: 110px; } /* Slightly smaller on mobile */
+            .file-card { height: 110px; }
             .file-preview { width: 90px; }
         }
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -259,7 +257,7 @@
             </div>
         </div>
 
-        <!-- === FILES SECTION (LIST VIEW) === -->
+        <!-- === FILES SECTION === -->
         <div id="files" class="section">
             <div style="text-align:center; margin-bottom: 1.5rem;">
                 <h2>Study Materials</h2>
@@ -289,9 +287,16 @@
                     </div>
                 </div>
 
-                <button onclick="window.uploadFile()" class="auth-btn" style="width:100%; justify-content:center; margin-top:10px;">
+                <button id="upload-btn-el" onclick="window.uploadFile()" class="auth-btn" style="width:100%; justify-content:center; margin-top:10px;">
                     <i class="fas fa-cloud-upload-alt"></i> Upload Files
                 </button>
+            </div>
+
+            <!-- User's Pending Uploads -->
+            <div id="my-pending-files" style="display:none; margin-bottom:20px;">
+                <h4 style="color:var(--text-light); margin-bottom:10px; font-size:0.9rem;">My Pending Uploads</h4>
+                <div id="my-pending-list" class="grid-gallery" style="opacity:0.8;"></div>
+                <hr style="margin:20px 0; border:none; border-top:1px solid var(--border);">
             </div>
 
             <div id="public-gallery" class="grid-gallery">
@@ -332,13 +337,29 @@
                 <button onclick="window.logoutAdmin()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 12px; border-radius:6px; cursor:pointer; font-size:0.8rem;">Exit</button>
             </div>
 
+            <!-- STATS -->
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div id="stat-total-users" class="stat-num">...</div>
+                    <small>Total Users</small>
+                </div>
+                <div class="stat-box">
+                    <div id="stat-active-users" class="stat-num">...</div>
+                    <small><span class="online-dot"></span>Online Now</small>
+                </div>
+            </div>
+
             <div class="grid-2">
-                <!-- Pending -->
+                <!-- Left: Pending & Online -->
                 <div>
                     <h4 style="margin-top:0;">Pending Approvals</h4>
                     <div id="admin-pending-list">No pending items.</div>
+                    
+                    <h4 style="margin-top:20px;">Live Users</h4>
+                    <div id="active-user-list" class="card" style="font-size:0.85rem; color:var(--text-light); padding:15px;">Loading...</div>
                 </div>
-                <!-- Tools -->
+                
+                <!-- Right: Tools -->
                 <div>
                     <div class="card" style="margin-bottom:1rem;">
                         <h4 style="margin-top:0;">Post Notice</h4>
@@ -401,7 +422,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // CONFIG
         const firebaseConfig = {
@@ -422,8 +443,9 @@
         
         let currentUser = null;
         let isAdmin = false;
+        let presenceInterval = null;
 
-        // UTILS
+        // --- NAVIGATION & UTILS ---
         window.nav = (id) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id === 'admin' ? 'admin-dash' : id).classList.add('active');
@@ -460,32 +482,48 @@
             const body = document.getElementById('preview-body');
             document.getElementById('preview-title').innerText = title;
             modal.style.display = 'flex';
-            if(type === 'PDF') {
-                body.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
-            } else {
-                body.innerHTML = `<img src="${url}" alt="preview">`;
-            }
+            if(type === 'PDF') body.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+            else body.innerHTML = `<img src="${url}" alt="preview">`;
         }
         window.closePreview = () => {
             document.getElementById('preview-modal').style.display = 'none';
             document.getElementById('preview-body').innerHTML = '';
         }
 
-        // AUTH
+        // --- AUTH & PRESENCE ---
         window.googleLogin = () => signInWithPopup(auth, provider).catch(e => window.toast(e.message, 'error'));
         window.logout = () => signOut(auth).then(() => window.location.reload());
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if(user) {
                 document.getElementById('login-btn').style.display = 'none';
                 document.getElementById('logout-btn').style.display = 'flex';
                 document.getElementById('upload-area').style.display = 'block';
+                
                 checkSubAdmin(user.email);
+                registerUser(user);
+                startPresence(user);
+                loadMyPending(user.displayName);
+            } else {
+                if(presenceInterval) clearInterval(presenceInterval);
             }
         });
 
-        // ADMIN
+        async function registerUser(user) {
+            const ref = doc(db, "users", user.uid);
+            try { await setDoc(ref, { email: user.email, name: user.displayName, lastSeen: serverTimestamp() }, { merge: true }); } catch(e){}
+        }
+
+        function startPresence(user) {
+            const ref = doc(db, "presence", user.uid);
+            const updateHeartbeat = () => setDoc(ref, { email: user.email, lastActive: serverTimestamp(), state: 'online' });
+            updateHeartbeat();
+            presenceInterval = setInterval(updateHeartbeat, 60000);
+            window.addEventListener('beforeunload', () => deleteDoc(ref));
+        }
+
+        // --- ADMIN SYSTEM ---
         window.handleAdminClick = () => { 
             if(isAdmin) window.nav('admin'); 
             else document.getElementById('admin-modal').style.display = 'flex'; 
@@ -498,9 +536,7 @@
                 activateAdmin();
                 document.getElementById('admin-modal').style.display = 'none';
                 window.toast("Unlocked", "success");
-            } else { 
-                window.toast("Invalid", "error"); 
-            }
+            } else { window.toast("Invalid", "error"); }
         }
 
         async function checkSubAdmin(email) {
@@ -510,15 +546,36 @@
 
         function activateAdmin() {
             isAdmin = true;
+            document.body.classList.add('is-admin'); // Shows delete buttons via CSS
             window.nav('admin');
             loadAdminData();
             loadAdminList();
             loadDriveLinksAdmin();
+            loadStats();
         }
 
-        window.logoutAdmin = () => { isAdmin = false; window.nav('home'); window.toast("Exited Admin"); }
+        window.logoutAdmin = () => { 
+            isAdmin = false; 
+            document.body.classList.remove('is-admin');
+            window.nav('home'); 
+            window.toast("Exited Admin"); 
+        }
 
-        // FUNCTIONS
+        // --- STATS LOGIC ---
+        async function loadStats() {
+            const usersSnap = await getCountFromServer(collection(db, "users"));
+            document.getElementById('stat-total-users').innerText = usersSnap.data().count;
+
+            const twoMinsAgo = new Date(Date.now() - 2 * 60 * 1000);
+            onSnapshot(query(collection(db, "presence"), where("lastActive", ">", twoMinsAgo)), (snap) => {
+                document.getElementById('stat-active-users').innerText = snap.size;
+                let html = "";
+                snap.forEach(doc => html += `<div style="margin-bottom:4px;"><i class="fas fa-circle" style="color:#10b981; font-size:8px;"></i> ${doc.data().email}</div>`);
+                document.getElementById('active-user-list').innerHTML = html || "No one online.";
+            });
+        }
+
+        // --- UPLOAD LOGIC ---
         window.uploadFile = async () => {
             if(!currentUser) return window.toast("Login required", "error");
             const fileInput = document.getElementById('file-input');
@@ -527,6 +584,7 @@
             if(files.length === 0) return window.toast("No files selected", "error");
 
             document.getElementById('progress-container').style.display = 'block';
+            document.getElementById('upload-btn-el').disabled = true;
 
             for(let i = 0; i < files.length; i++) {
                 const file = files[i];
@@ -552,18 +610,23 @@
                     });
                 } catch(e) { window.toast(`Failed: ${file.name}`, "error"); }
             }
-            window.toast("Done", "success");
+            
+            if(isAdmin) window.toast("Posted!", "success");
+            else window.toast("Submitted for Approval", "info");
+
             document.getElementById('file-title').value = '';
             fileInput.value = '';
             document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('upload-btn-el').disabled = false;
         }
 
-        // CONFIRMATION UTILS
-        window.confirmAction = (msg1, msg2, cb) => { if(confirm(msg1)) { setTimeout(() => { if(confirm(msg2)) cb(); }, 100); } }
+        // --- ACTIONS ---
+        window.confirmAction = (msg, cb) => { if(confirm(msg)) { setTimeout(()=> { if(confirm("Are you absolutely sure?")) cb(); }, 100); } }
 
-        window.approve = async (id) => window.confirmAction("Approve this file?", "Absolutely sure?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); window.toast("Approved", "success"); });
-        window.reject = async (id) => window.confirmAction("Delete request?", "Cannot be undone. Sure?", async () => { await deleteDoc(doc(db, "files", id)); window.toast("Deleted", "info"); });
-        window.deleteDrive = async (id) => window.confirmAction("Remove link?", "Sure?", async () => { await deleteDoc(doc(db, "drive_links", id)); window.toast("Deleted", "info"); });
+        window.approve = async (id) => window.confirmAction("Approve file?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); window.toast("Approved", "success"); });
+        window.deleteFile = async (id) => window.confirmAction("Permanently Delete?", async () => { await deleteDoc(doc(db, "files", id)); window.toast("Deleted", "info"); });
+        window.deleteNotice = async (id) => window.confirmAction("Remove notice?", async () => { await deleteDoc(doc(db, "notices", id)); window.toast("Removed", "info"); });
+        window.deleteDrive = async (id) => window.confirmAction("Remove link?", async () => { await deleteDoc(doc(db, "drive_links", id)); window.toast("Deleted", "info"); });
 
         window.postNotice = async () => {
             const msg = document.getElementById('admin-msg').value;
@@ -587,14 +650,18 @@
             if(email) { await addDoc(collection(db, "admins"), { email }); document.getElementById('sub-admin-email').value=''; window.toast("Added", "success"); }
         }
 
-        // DATA LISTENERS
+        // --- READ DATA LISTENERS ---
+
+        // 1. Files
         onSnapshot(query(collection(db, "files"), where("status", "==", "approved"), orderBy("timestamp", "desc")), (snap) => {
             let html = "";
             snap.forEach(doc => {
                 const d = doc.data();
                 const preview = d.type === 'PDF' ? `<i class="fas fa-file-pdf file-type-icon" style="color:#ef4444"></i>` : `<img src="${d.url}" alt="img">`;
+                
                 html += `
                 <div class="file-card">
+                    <button class="admin-only-btn" onclick="window.deleteFile('${doc.id}')"><i class="fas fa-trash"></i></button>
                     <div class="file-preview">${preview}</div>
                     <div class="file-body">
                         <span class="file-badge">${d.type}</span>
@@ -610,26 +677,59 @@
             document.getElementById('public-gallery').innerHTML = html || '<p style="text-align:center;">No files found.</p>';
         });
 
+        // 2. My Pending
+        function loadMyPending(name) {
+            onSnapshot(query(collection(db, "files"), where("uploader", "==", name), where("status", "==", "pending")), (snap) => {
+                const el = document.getElementById('my-pending-files');
+                if(snap.empty) { el.style.display = 'none'; return; }
+                el.style.display = 'block';
+                let html = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `
+                    <div class="file-card" style="height:80px; border-color:#f59e0b;">
+                        <div class="file-body">
+                            <span class="file-badge" style="background:#fef3c7; color:#d97706">Pending Review</span>
+                            <div class="file-title">${d.title}</div>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('my-pending-list').innerHTML = html;
+            });
+        }
+
+        // 3. Notices
         onSnapshot(query(collection(db, "notices"), orderBy("timestamp", "desc")), (snap) => {
             let html = "";
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString() : '';
-                html += `<div class="card" style="margin-bottom:10px; padding:15px; border-left:4px solid var(--primary);"><div>${d.message}</div><small style="color:#888; display:block; margin-top:5px;">${date} • ${d.author}</small></div>`;
+                html += `
+                <div class="notice-card">
+                    <button class="admin-only-btn" onclick="window.deleteNotice('${doc.id}')" style="top:5px; right:5px;"><i class="fas fa-times"></i></button>
+                    <div>${d.message}</div>
+                    <small style="color:#888; display:block; margin-top:5px;">${date} • ${d.author}</small>
+                </div>`;
             });
             document.getElementById('public-notices').innerHTML = html || '<p>No notices.</p>';
         });
 
+        // 4. Drive
         onSnapshot(query(collection(db, "drive_links"), orderBy("timestamp", "desc")), (snap) => {
             let html = "";
             snap.forEach(doc => {
                 const d = doc.data();
-                html += `<a href="${d.url}" target="_blank" class="drive-link-card"><i class="fab fa-google-drive drive-icon-lg"></i><span>${d.title}</span></a>`;
+                html += `
+                <a href="${d.url}" target="_blank" class="drive-link-card">
+                    <button class="admin-only-btn" onclick="event.preventDefault(); window.deleteDrive('${doc.id}')" style="top:-5px; right:-5px;"><i class="fas fa-times"></i></button>
+                    <i class="fab fa-google-drive" style="color:#10b981; font-size:1.5rem;"></i>
+                    <span>${d.title}</span>
+                </a>`;
             });
             document.getElementById('drive-links-list').innerHTML = html || '<p style="text-align:center;">No links.</p>';
         });
 
-        // Admin Data
+        // --- ADMIN DATA LOAD ---
         function loadAdminData() {
             onSnapshot(query(collection(db, "files"), where("status", "==", "pending")), (snap) => {
                 let html = "";
@@ -642,7 +742,7 @@
                         <div style="display:flex; gap:8px;">
                             <button onclick="window.openPreview('${d.url}', '${d.type}', '${d.title}')" class="action-btn btn-view">View</button>
                             <button onclick="window.approve('${doc.id}')" style="background:#10b981; color:white; border:none; border-radius:6px; padding:6px; flex:1; cursor:pointer;">Approve</button>
-                            <button onclick="window.reject('${doc.id}')" style="background:#ef4444; color:white; border:none; border-radius:6px; padding:6px; flex:1; cursor:pointer;">Reject</button>
+                            <button onclick="window.deleteFile('${doc.id}')" style="background:#ef4444; color:white; border:none; border-radius:6px; padding:6px; flex:1; cursor:pointer;">Reject</button>
                         </div>
                     </div>`;
                 });
@@ -667,4 +767,4 @@
         }
     </script>
 </body>
-                                </html>
+</html>
