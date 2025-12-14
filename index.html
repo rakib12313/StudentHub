@@ -111,7 +111,6 @@
         }
         .hero h1 { margin: 0 0 5px; font-size: 1.6rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* Notices */
         .notices-grid { display: grid; gap: 0.8rem; }
         .notice-card {
             background: white; border-radius: 12px; padding: 1.2rem;
@@ -119,8 +118,13 @@
             position: relative; display: flex; gap: 12px; align-items: flex-start;
         }
         .notice-icon { background: #e0e7ff; color: var(--primary); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-        .admin-del-notice { position: absolute; top: 10px; right: 10px; color: #ef4444; background: none; border: none; font-size: 1.1rem; padding: 5px; cursor: pointer; display: none; }
-        body.is-admin .admin-del-notice { display: block; }
+        
+        /* Admin Controls on Cards */
+        .admin-controls-card { position: absolute; top: 10px; right: 10px; display:none; gap:5px; z-index:10; }
+        .icon-btn { border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-del { background: #ef4444; }
+        .btn-edit { background: #6366f1; }
+        body.is-admin .admin-controls-card { display: flex; }
 
         /* Files Tabs */
         .file-tabs-container {
@@ -152,20 +156,15 @@
         .file-actions { display: flex; gap: 10px; margin-top: auto; }
         .action-link { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--primary); cursor: pointer; padding: 4px 0; }
 
-        /* Admin/User Controls */
-        .admin-controls { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; }
-        .admin-btn-sm { border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-del { background: #ef4444; }
-        .btn-edit { background: #6366f1; }
-        
-        body.is-admin .admin-controls { display: flex; }
-        body.is-admin .admin-del-file { display: flex; }
+        /* Admin Controls for Files (Specific Position) */
+        .admin-controls-file { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; }
+        body.is-admin .admin-controls-file { display: flex; }
+        /* Only delete button for drive link cards on main page if needed, using generic class */
+        .admin-del-only { display: none; position: absolute; top:5px; right:5px; background: #fee2e2; color: #b91c1c; border:none; width:24px; height:24px; border-radius:50%; align-items:center; justify-content:center; cursor:pointer; }
+        body.is-admin .admin-del-only { display:flex; }
 
-        .admin-del-file { position: absolute; top: 5px; right: 5px; background: #fee2e2; color: #b91c1c; border: none; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 10; }
-
-        /* Status & History */
+        /* Status & User History */
         .status-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
-        .status-info { flex: 1; min-width: 0; }
         .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display:inline-flex; align-items:center; gap:4px; margin-top: 4px; }
         .st-pending { background: #fef3c7; color: #d97706; }
         .st-approved { background: #dcfce7; color: #166534; }
@@ -173,10 +172,9 @@
         .user-actions { display: flex; gap: 8px; }
         .user-icon-btn { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; color: var(--text-light); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .user-icon-btn:hover { background: #e2e8f0; color: var(--primary); }
-        .btn-danger-light:hover { background: #fee2e2; color: #ef4444; }
 
         .drive-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .drive-card { background: white; padding: 18px; border-radius: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); font-weight: 600; }
+        .drive-card { background: white; padding: 18px; border-radius: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); font-weight: 600; position:relative; }
 
         .search-bar { width: 100%; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); margin-bottom: 1.5rem; outline: none; font-size: 16px; }
         input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 16px; }
@@ -201,11 +199,17 @@
         .stat-card { background: var(--text-main); color: white; padding: 15px; border-radius: 16px; text-align: center; }
         .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #4ade80; }
 
-        /* Admin List Style */
+        /* Admin Lists */
         .admin-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
-        .admin-row:last-child { border-bottom: none; }
-        .btn-xs-del { background: #fee2e2; color: #ef4444; border: none; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; margin-bottom: 5px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; }
+        .log-item { font-size: 0.75rem; color: var(--text-light); padding: 5px 0; border-bottom: 1px solid #f1f5f9; }
+        
+        /* New buttons for list items */
+        .btn-xs-del { background: #fee2e2; color: #ef4444; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+        .btn-xs-edit { background: #e0e7ff; color: #4338ca; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
 
+        #master-admin-section { display: none; }
+        
         @media (max-width: 850px) {
             .desktop-menu { display: none; }
             .mobile-nav { display: flex; }
@@ -345,10 +349,14 @@
             </div>
             <div class="grid-2">
                 <div>
-                    <h4 style="border-bottom:2px solid var(--border); padding-bottom:8px;">Pending</h4>
+                    <h4 style="border-bottom:2px solid var(--border); padding-bottom:8px;">Pending Approvals</h4>
                     <div id="admin-pending-list" style="margin-top:10px;">No pending items.</div>
+                    
                     <h4 style="margin-top:25px; border-bottom:2px solid var(--border); padding-bottom:8px;">Online Users</h4>
                     <div id="active-user-list" style="margin-top:10px; background:white; padding:15px; border-radius:12px; font-size:0.9rem;">None.</div>
+
+                    <h4 style="margin-top:25px; border-bottom:2px solid var(--border); padding-bottom:8px;">Activity Log</h4>
+                    <div id="admin-activity-log" style="background:white; padding:15px; border-radius:12px; font-size:0.8rem; max-height:150px; overflow-y:auto;">Log empty.</div>
                 </div>
                 <div>
                     <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
@@ -356,8 +364,9 @@
                         <textarea id="admin-msg" rows="3" placeholder="Write announcement..."></textarea>
                         <button onclick="window.postNotice()" class="auth-btn" style="width:100%; justify-content:center;">Post</button>
                     </div>
-                    <!-- Sub-Admin Manage -->
-                    <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
+                    
+                    <!-- MASTER ADMIN ONLY -->
+                    <div id="master-admin-section" style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border); border-left:4px solid #6366f1;">
                         <h4>Manage Admins</h4>
                         <div style="display:flex; gap:5px; margin-bottom:10px;">
                             <input type="email" id="sub-admin-email" placeholder="Email" style="margin:0; flex:1;">
@@ -365,6 +374,14 @@
                         </div>
                         <div id="admin-list" style="font-size:0.8rem; color:var(--text-light);"></div>
                     </div>
+
+                    <!-- USER MANAGEMENT -->
+                    <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
+                        <h4>Manage Users</h4>
+                        <input type="text" placeholder="Search user..." onkeyup="window.filterUserList(this.value)">
+                        <div id="all-user-list" style="max-height:150px; overflow-y:auto;">Loading...</div>
+                    </div>
+
                     <div style="background:white; padding:15px; border-radius:16px; border:1px solid var(--border);">
                         <h4>Add Drive Link</h4>
                         <input type="text" id="drive-title" placeholder="Name">
@@ -416,9 +433,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // IMPORTANT: Use your own Unsigned Preset
         const firebaseConfig = {
             apiKey: "AIzaSyA3fovDzCF_3mCFD4yGsvgCFfan_tuDc3Y",
             authDomain: "studenthub-599bf.firebaseapp.com",
@@ -437,13 +453,13 @@
         
         let currentUser = null;
         let isAdmin = false;
-        let isMaster = false; // Master Admin Flag
+        let isMaster = false;
         let presenceInterval = null;
         let statsUnsub = null;
         let currentPreviewUrl = '';
         let currentPreviewType = '';
 
-        // GLOBAL UTILS
+        // --- GLOBAL UTILS ---
         window.nav = (id) => {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id === 'admin' ? 'admin-dash' : id).classList.add('active');
@@ -486,7 +502,13 @@
             });
         }
 
-        // PREVIEW LOGIC
+        window.filterUserList = (term) => {
+            document.querySelectorAll('.user-row').forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(term.toLowerCase()) ? 'flex' : 'none';
+            });
+        }
+
+        // --- PREVIEW LOGIC ---
         window.openPreview = (url, type, title) => {
             currentPreviewUrl = url;
             currentPreviewType = type;
@@ -514,13 +536,22 @@
             document.getElementById('preview-body').innerHTML = '';
         }
 
-        // AUTH
+        // --- AUTH ---
         window.googleLogin = () => signInWithPopup(auth, provider).catch(e => window.toast(e.message, 'error'));
         window.logout = () => signOut(auth).then(() => window.location.reload());
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
             if(user) {
+                // Check Ban Status
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                if(userSnap.exists() && userSnap.data().banned) {
+                    await signOut(auth);
+                    alert("Account Banned.");
+                    return;
+                }
+
                 document.getElementById('login-btn').style.display = 'none';
                 document.getElementById('profile-container').style.display = 'flex';
                 document.getElementById('user-avatar').src = user.photoURL || 'https://via.placeholder.com/40';
@@ -536,7 +567,7 @@
         });
 
         async function registerUser(user) {
-            try { await setDoc(doc(db, "users", user.uid), { email: user.email, name: user.displayName, lastSeen: serverTimestamp() }, { merge: true }); } catch(e){}
+            try { await setDoc(doc(db, "users", user.uid), { email: user.email, name: user.displayName, lastSeen: serverTimestamp(), banned: false }, { merge: true }); } catch(e){}
         }
 
         function startPresence(user) {
@@ -547,14 +578,14 @@
             window.addEventListener('beforeunload', () => deleteDoc(ref));
         }
 
-        // ADMIN
+        // --- ADMIN ---
         window.handleAdminClick = () => isAdmin ? window.nav('admin') : document.getElementById('admin-modal').style.display = 'flex';
         
         window.verifyAdmin = () => {
             const u = document.getElementById('admin-user').value;
             const p = document.getElementById('admin-pass').value;
             if(u === "Rakib" && p === "adminrakib") {
-                isMaster = true; // Set Master Flag
+                isMaster = true; 
                 activateAdmin(); document.getElementById('admin-modal').style.display = 'none'; window.toast("Master Unlocked", "success");
             } else { window.toast("Invalid", "error"); }
         }
@@ -565,29 +596,74 @@
         }
 
         function activateAdmin() {
-            isAdmin = true; document.body.classList.add('is-admin'); window.nav('admin');
-            loadStats(); loadAllFiles(); loadAdminDrive(); loadAdminList();
+            isAdmin = true; 
+            document.body.classList.add('is-admin');
+            if(isMaster) document.getElementById('master-admin-section').style.display = 'block';
+            window.nav('admin');
+            loadStats(); loadAllFiles(); loadAdminDrive(); loadAdminList(); loadUserManagement(); loadLogs();
         }
 
         window.logoutAdmin = () => { 
             isAdmin = false; isMaster = false;
-            document.body.classList.remove('is-admin'); if(statsUnsub) statsUnsub(); window.nav('home'); window.toast("Exited Admin"); 
+            document.body.classList.remove('is-admin'); 
+            document.getElementById('master-admin-section').style.display = 'none';
+            if(statsUnsub) statsUnsub(); 
+            window.nav('home'); window.toast("Exited Admin"); 
+        }
+
+        // LOGGING
+        const logAction = (msg) => {
+            if(isAdmin && currentUser) {
+                addDoc(collection(db, "logs"), { message: `${currentUser.displayName}: ${msg}`, timestamp: serverTimestamp() });
+            }
+        }
+
+        function loadLogs() {
+            onSnapshot(query(collection(db, "logs"), orderBy("timestamp", "desc")), (snap) => {
+                let html = "";
+                snap.forEach(doc => html += `<div class="log-item">${doc.data().message}</div>`);
+                document.getElementById('admin-activity-log').innerHTML = html || 'No activity.';
+            });
+        }
+
+        // USER MANAGEMENT
+        function loadUserManagement() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                let html = "";
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    const btn = u.banned ? 
+                        `<button onclick="window.unbanUser('${doc.id}')" class="icon-btn" style="background:#10b981"><i class="fas fa-check"></i></button>` :
+                        `<button onclick="window.banUser('${doc.id}')" class="icon-btn btn-del"><i class="fas fa-ban"></i></button>`;
+                    html += `<div class="user-row"><div>${u.name} <small>(${u.email})</small></div>${btn}</div>`;
+                });
+                document.getElementById('all-user-list').innerHTML = html;
+            });
+        }
+
+        window.banUser = async (uid) => {
+            if(confirm("Ban this user?")) { await updateDoc(doc(db, "users", uid), { banned: true }); logAction("Banned user"); window.toast("Banned", "info"); }
+        }
+        window.unbanUser = async (uid) => {
+            await updateDoc(doc(db, "users", uid), { banned: false }); logAction("Unbanned user"); window.toast("Unbanned", "success");
         }
 
         // SUB ADMINS
         window.addSubAdmin = async () => {
+            if(!isMaster) return;
             const email = document.getElementById('sub-admin-email').value;
             if(!email) return window.toast("Enter email", "error");
             await addDoc(collection(db, "admins"), { email });
             document.getElementById('sub-admin-email').value = '';
+            logAction("Added sub-admin");
             window.toast("Admin added", "success");
         }
 
-        // NEW: Remove Admin (Master Only)
         window.removeAdmin = async (id) => {
-            if(!isMaster) return window.toast("Master Admin only", "error");
+            if(!isMaster) return;
             if(confirm("Remove this admin?")) {
                 await deleteDoc(doc(db, "admins", id));
+                logAction("Removed sub-admin");
                 window.toast("Removed", "success");
             }
         }
@@ -596,7 +672,6 @@
             onSnapshot(collection(db, "admins"), (snap) => {
                 let html = "";
                 snap.forEach(doc => {
-                    // Only show delete button if Master Admin
                     const delBtn = isMaster ? `<button onclick="window.removeAdmin('${doc.id}')" class="btn-xs-del">X</button>` : '';
                     html += `<div class="admin-row"><div><i class="fas fa-user-shield" style="color:#6366f1; margin-right:5px;"></i> ${doc.data().email}</div>${delBtn}</div>`;
                 });
@@ -666,22 +741,46 @@
 
         // ACTIONS (Global)
         window.conf = (msg, cb) => { if(confirm(msg)) setTimeout(()=> { if(confirm("Confirm action?")) cb(); }, 100); }
-        window.approve = (id) => window.conf("Approve file?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); window.toast("Approved", "success"); });
-        window.rejectFile = (id) => window.conf("Reject file?", async () => { await updateDoc(doc(db, "files", id), { status: 'rejected' }); window.toast("Rejected", "info"); });
-        window.deleteFile = (id) => window.conf("Delete permanently?", async () => { await deleteDoc(doc(db, "files", id)); window.toast("Deleted", "info"); });
-        window.deleteNotice = (id) => window.conf("Delete notice?", async () => { await deleteDoc(doc(db, "notices", id)); window.toast("Deleted", "info"); });
-        window.deleteDrive = (id) => window.conf("Delete link?", async () => { await deleteDoc(doc(db, "drive_links", id)); window.toast("Deleted", "info"); });
+        window.approve = (id) => window.conf("Approve file?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); logAction("Approved file"); window.toast("Approved", "success"); });
+        window.rejectFile = (id) => window.conf("Reject file?", async () => { await updateDoc(doc(db, "files", id), { status: 'rejected' }); logAction("Rejected file"); window.toast("Rejected", "info"); });
+        window.deleteFile = (id) => window.conf("Delete permanently?", async () => { await deleteDoc(doc(db, "files", id)); logAction("Deleted file"); window.toast("Deleted", "info"); });
+        window.deleteNotice = (id) => window.conf("Delete notice?", async () => { await deleteDoc(doc(db, "notices", id)); logAction("Deleted notice"); window.toast("Deleted", "info"); });
+        window.deleteDrive = (id) => window.conf("Delete link?", async () => { await deleteDoc(doc(db, "drive_links", id)); logAction("Deleted link"); window.toast("Deleted", "info"); });
         
-        // ADMIN RENAME
+        // ADMIN EDITING
         window.renameFile = async (id, oldName) => {
             const newName = prompt("Rename file:", oldName);
             if(newName && newName !== oldName) {
                 await updateDoc(doc(db, "files", id), { title: newName });
+                logAction(`Renamed file to ${newName}`);
                 window.toast("Renamed", "success");
             }
         }
+        
+        // NEW: Edit Drive Link
+        window.editDriveLink = async (id, oldTitle, oldUrl) => {
+            const newTitle = prompt("Edit Title:", oldTitle);
+            if(newTitle === null) return;
+            const newUrl = prompt("Edit URL:", oldUrl);
+            if(newUrl === null) return;
 
-        // NEW: User Actions
+            if(newTitle && newUrl && (newTitle !== oldTitle || newUrl !== oldUrl)) {
+                await updateDoc(doc(db, "drive_links", id), { title: newTitle, url: newUrl });
+                logAction("Edited drive link");
+                window.toast("Updated", "success");
+            }
+        }
+
+        window.editNotice = async (id, oldMsg) => {
+            const newMsg = prompt("Edit notice:", oldMsg);
+            if(newMsg && newMsg !== oldMsg) {
+                await updateDoc(doc(db, "notices", id), { message: newMsg });
+                logAction("Edited notice");
+                window.toast("Updated", "success");
+            }
+        }
+
+        // USER ACTIONS
         window.userRenameFile = async (id, oldName) => {
             const newName = prompt("Rename your file:", oldName);
             if(newName && newName !== oldName) {
@@ -700,13 +799,17 @@
             const msg = document.getElementById('admin-msg').value;
             if(!msg) return;
             await addDoc(collection(db, "notices"), { message: msg, author: currentUser?.displayName || 'Admin', timestamp: serverTimestamp() });
-            document.getElementById('admin-msg').value = ''; window.toast("Posted", "success");
+            document.getElementById('admin-msg').value = ''; 
+            logAction("Posted notice");
+            window.toast("Posted", "success");
         }
         window.addDriveLink = async () => {
             const title = document.getElementById('drive-title').value, url = document.getElementById('drive-url').value;
             if(!title || !url) return;
             await addDoc(collection(db, "drive_links"), { title, url, timestamp: serverTimestamp() });
-            document.getElementById('drive-title').value = ''; document.getElementById('drive-url').value = ''; window.toast("Added", "success");
+            document.getElementById('drive-title').value = ''; document.getElementById('drive-url').value = ''; 
+            logAction("Added drive link");
+            window.toast("Added", "success");
         }
 
         // LOADERS
@@ -718,14 +821,13 @@
                 allFiles.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                 allFiles.forEach(d => {
-                    // Public List
                     if(d.status === 'approved') {
                         const icon = d.type === 'PDF' ? '<i class="fas fa-file-pdf" style="color:#ef4444; font-size:2rem;"></i>' : `<img src="${d.url}" alt="img">`;
                         publicHtml += `
                         <div class="file-card">
                             <div class="admin-controls">
-                                <button class="admin-btn-sm btn-edit" onclick="window.renameFile('${d.id}', '${d.title}')"><i class="fas fa-pen"></i></button>
-                                <button class="admin-btn-sm btn-del" onclick="window.deleteFile('${d.id}')"><i class="fas fa-trash"></i></button>
+                                <button class="icon-btn btn-edit" onclick="window.renameFile('${d.id}', '${d.title}')"><i class="fas fa-pen"></i></button>
+                                <button class="icon-btn btn-del" onclick="window.deleteFile('${d.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                             <div class="file-preview">${icon}</div>
                             <div class="file-info">
@@ -739,11 +841,9 @@
                             </div>
                         </div>`;
                     }
-                    // Admin Pending
                     if(d.status === 'pending') {
                         pendingHtml += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;"><div style="font-weight:600;">${d.title}</div><small>${d.uploader}</small><div style="display:flex; gap:10px; margin-top:5px;"><button onclick="window.openPreview('${d.url}','${d.type}','${d.title}')" style="cursor:pointer;">View</button><button onclick="window.approve('${d.id}')" style="color:green; cursor:pointer;">Approve</button><button onclick="window.rejectFile('${d.id}')" style="color:orange; cursor:pointer;">Reject</button><button onclick="window.deleteFile('${d.id}')" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`;
                     }
-                    // My History
                     if(currentUser && d.uploader === currentUser.displayName) {
                         let badge = d.status === 'approved' ? 'st-approved' : (d.status === 'rejected' ? 'st-rejected' : 'st-pending');
                         myHtml += `
@@ -754,7 +854,7 @@
                             </div>
                             <div class="user-actions">
                                 <button onclick="window.userRenameFile('${d.id}', '${d.title}')" class="user-icon-btn"><i class="fas fa-pen"></i></button>
-                                <button onclick="window.userDeleteFile('${d.id}')" class="user-icon-btn btn-danger-light"><i class="fas fa-trash"></i></button>
+                                <button onclick="window.userDeleteFile('${d.id}')" class="user-icon-btn" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;
                     }
@@ -770,7 +870,15 @@
             snap.forEach(doc => {
                 const d = doc.data();
                 const date = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString() : 'Today';
-                html += `<div class="notice-card"><button class="admin-del-notice" onclick="window.deleteNotice('${doc.id}')"><i class="fas fa-trash"></i></button><div class="notice-icon"><i class="fas fa-bell"></i></div><div class="notice-content"><div class="notice-msg">${d.message}</div><div class="notice-meta"><span><i class="far fa-calendar-alt"></i> ${date}</span><span>• ${d.author}</span></div></div></div>`;
+                html += `
+                <div class="notice-card">
+                    <div class="admin-controls-notice">
+                        <button class="icon-btn btn-edit" onclick="window.editNotice('${doc.id}', '${d.message}')"><i class="fas fa-pen"></i></button>
+                        <button class="icon-btn btn-del" onclick="window.deleteNotice('${doc.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="notice-icon"><i class="fas fa-bell"></i></div>
+                    <div class="notice-content"><div class="notice-msg">${d.message}</div><div class="notice-meta"><span><i class="far fa-calendar-alt"></i> ${date}</span><span>• ${d.author}</span></div></div>
+                </div>`;
             });
             document.getElementById('public-notices').innerHTML = html || '<p>No notices.</p>';
         });
@@ -778,8 +886,20 @@
         onSnapshot(query(collection(db, "drive_links"), orderBy("timestamp", "desc")), (s) => {
             let html = "", adminHtml = "";
             s.forEach(d => {
-                html += `<a href="${d.data().url}" target="_blank" class="drive-card"><i class="fab fa-google-drive" style="color:#10b981; font-size:1.5rem;"></i><span>${d.data().title}</span> <button class="admin-del-file" onclick="event.preventDefault(); window.deleteDrive('${d.id}')"><i class="fas fa-trash"></i></button></a>`;
-                adminHtml += `<div>${d.data().title} <span style="color:red; cursor:pointer;" onclick="window.deleteDrive('${d.id}')">X</span></div>`;
+                // Public View
+                html += `<a href="${d.data().url}" target="_blank" class="drive-card"><i class="fab fa-google-drive" style="color:#10b981; font-size:1.5rem;"></i><span>${d.data().title}</span> <button class="admin-del-only" onclick="event.preventDefault(); window.deleteDrive('${d.id}')"><i class="fas fa-trash"></i></button></a>`;
+                
+                // Admin Edit View
+                adminHtml += `
+                <div class="admin-row">
+                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <i class="fab fa-google-drive" style="color:#10b981; margin-right:5px;"></i> ${d.data().title}
+                    </span>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-xs-edit" onclick="window.editDriveLink('${d.id}', '${d.data().title}', '${d.data().url}')"><i class="fas fa-pen"></i></button>
+                        <button class="btn-xs-del" onclick="window.deleteDrive('${d.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
             });
             document.getElementById('drive-links-list').innerHTML = html || '<p style="text-align:center; color:#888;">No links.</p>';
             document.getElementById('admin-drive-list').innerHTML = adminHtml;
