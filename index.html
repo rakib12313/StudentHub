@@ -159,7 +159,7 @@
 
         /* Admin Controls for Files */
         .admin-controls-file { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; }
-        .admin-controls { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; } /* Generic name used in JS */
+        .admin-controls { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; } 
         body.is-admin .admin-controls { display: flex; }
         
         .admin-del-only { display: none; position: absolute; top:5px; right:5px; background: #fee2e2; color: #b91c1c; border:none; width:24px; height:24px; border-radius:50%; align-items:center; justify-content:center; cursor:pointer; }
@@ -437,7 +437,6 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // IMPORTANT: Use your own Unsigned Preset
         const firebaseConfig = {
             apiKey: "AIzaSyA3fovDzCF_3mCFD4yGsvgCFfan_tuDc3Y",
             authDomain: "studenthub-599bf.firebaseapp.com",
