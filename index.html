@@ -1,493 +1,932 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>StudentHub - Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
+    
+    <style>
+        :root {
+            --primary: #6366f1;       
+            --primary-dark: #4338ca;
+            --secondary: #ec4899;
+            --bg: #f8fafc;            
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; margin: 0; 
+            background: var(--bg); color: var(--text-main);
+            display: flex; flex-direction: column; min-height: 100vh;
+            padding-bottom: 90px; 
+        }
+
+        /* --- Navbar --- */
+        nav { 
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.8rem 5%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 900;
+            height: 60px;
+        }
+
+        .logo { 
+            font-weight: 800; font-size: 1.4rem; background: var(--gradient); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+        }
+        
+        .desktop-menu { display: flex; gap: 8px; }
+        .menu-item {
+            border: none; background: transparent; padding: 8px 18px;
+            font-size: 0.95rem; font-weight: 500; color: var(--text-light);
+            cursor: pointer; border-radius: 50px; transition: 0.3s;
+        }
+        .menu-item:hover { color: var(--primary); background: #f5f3ff; }
+        .menu-item.active { background: var(--text-main); color: white; font-weight: 600; }
+        .menu-item.admin-lock { color: #ef4444; }
+
+        .auth-btn {
+            background: var(--text-main); color: white; border: none;
+            padding: 8px 16px; border-radius: 50px; font-weight: 600;
+            cursor: pointer; transition: 0.2s; box-shadow: var(--shadow);
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
+        }
+        
+        /* Profile */
+        .profile-container { position: relative; display: none; align-items: center; cursor: pointer; gap: 8px; }
+        .profile-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        .profile-dropdown {
+            position: absolute; top: 50px; right: 0; background: white;
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 180px; display: none; flex-direction: column; overflow: hidden;
+            border: 1px solid var(--border); animation: slideDown 0.2s ease;
+            z-index: 1000;
+        }
+        .profile-dropdown.show { display: flex; }
+        .pd-item { padding: 12px 15px; border-bottom: 1px solid #f3f4f6; font-size: 0.9rem; color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .pd-item:last-child { border-bottom: none; color: #ef4444; }
+
+        /* --- Mobile Nav --- */
+        .mobile-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
+            background: white; border-top: 1px solid var(--border);
+            justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom); z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+        .mob-link {
+            border: none; background: none; flex: 1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 4px; color: var(--text-light); font-size: 0.7rem; font-weight: 500; cursor: pointer; height: 100%;
+        }
+        .mob-link i { font-size: 1.4rem; margin-bottom: 2px; transition: 0.2s; }
+        .mob-link.active { color: var(--primary); }
+        .mob-link.active i { transform: translateY(-2px); }
+
+        /* --- Layout --- */
+        .container { max-width: 900px; margin: 1rem auto; padding: 0 15px; flex: 1; width: 100%; }
+        .section { display: none; animation: fadeIn 0.3s ease-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Components --- */
+        .hero {
+            background: var(--surface); color: var(--text-main);
+            padding: 2rem 1.5rem; border-radius: 20px; margin-bottom: 1.5rem;
+            position: relative; overflow: hidden; box-shadow: var(--shadow);
+            border: 1px solid white;
+            background-image: radial-gradient(circle at 100% 0%, #e0e7ff 0%, transparent 25%);
+        }
+        .hero h1 { margin: 0 0 5px; font-size: 1.6rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .notices-grid { display: grid; gap: 0.8rem; }
+        .notice-card {
+            background: white; border-radius: 12px; padding: 1.2rem;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            position: relative; display: flex; gap: 12px; align-items: flex-start;
+        }
+        .notice-icon { background: #e0e7ff; color: var(--primary); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        
+        /* Admin Controls */
+        .admin-controls-notice { position: absolute; top: 10px; right: 10px; display:none; gap:5px; }
+        .icon-btn { border: none; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-del { background: #ef4444; }
+        .btn-edit { background: #6366f1; }
+        body.is-admin .admin-controls-notice { display: flex; }
+
+        /* Files Tabs */
+        .file-tabs-container {
+            background: #e2e8f0; padding: 4px; border-radius: 12px;
+            display: flex; margin-bottom: 1.5rem; width: 100%; 
+        }
+        .file-tab-btn {
+            flex: 1; border: none; padding: 10px; border-radius: 8px;
+            font-weight: 600; color: var(--text-light); background: transparent;
+            cursor: pointer; transition: 0.3s; font-size: 0.9rem;
+        }
+        .file-tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .file-sub-view { display: none; }
+        .file-sub-view.active { display: block; animation: fadeIn 0.3s ease; }
+
+        /* File Card */
+        .file-list { display: flex; flex-direction: column; gap: 10px; }
+        .file-card {
+            background: white; border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden;
+            display: flex; flex-direction: row; height: 100px;
+            position: relative;
+        }
+        .file-preview { width: 85px; height: 100%; background: #f8fafc; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); flex-shrink: 0; }
+        .file-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .file-info { padding: 8px 12px; flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .file-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-main); }
+        .file-meta { font-size: 0.75rem; color: var(--text-light); margin-bottom: 6px; }
+        .file-actions { display: flex; gap: 10px; margin-top: auto; }
+        .action-link { font-size: 0.8rem; font-weight: 600; text-decoration: none; color: var(--primary); cursor: pointer; padding: 4px 0; }
+        .disabled-link { color: #94a3b8; cursor: pointer; }
+
+        /* Admin Controls for Files */
+        .admin-controls-file { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; }
+        .admin-controls { position: absolute; top: 5px; right: 5px; display: none; gap: 6px; z-index: 10; } 
+        body.is-admin .admin-controls { display: flex; }
+        
+        .admin-del-only { display: none; position: absolute; top:5px; right:5px; background: #fee2e2; color: #b91c1c; border:none; width:24px; height:24px; border-radius:50%; align-items:center; justify-content:center; cursor:pointer; }
+        body.is-admin .admin-del-only { display:flex; }
+
+        /* Status & User History */
+        .status-row { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+        .status-info { flex: 1; min-width: 0; }
+        .status-badge { padding: 4px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; display:inline-flex; align-items:center; gap:4px; margin-top: 4px; }
+        .st-pending { background: #fef3c7; color: #d97706; }
+        .st-approved { background: #dcfce7; color: #166534; }
+        .st-rejected { background: #fee2e2; color: #b91c1c; }
+        .user-actions { display: flex; gap: 8px; }
+        .user-icon-btn { background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; color: var(--text-light); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .user-icon-btn:hover { background: #e2e8f0; color: var(--primary); }
+
+        .drive-container { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .drive-card { background: white; padding: 18px; border-radius: 14px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px; text-decoration: none; color: var(--text-main); font-weight: 600; position:relative; }
+
+        .search-bar { width: 100%; padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); margin-bottom: 1.5rem; outline: none; font-size: 16px; }
+        input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 16px; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 2rem; border-radius: 20px; width: 85%; max-width: 350px; text-align: center; }
+
+        /* Preview Modal */
+        .preview-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; display: none; flex-direction: column; }
+        .preview-header { padding: 10px 15px; display: flex; justify-content: space-between; color: white; background: rgba(0,0,0,0.5); align-items: center; }
+        .preview-content { flex: 1; display: flex; justify-content: center; align-items: center; padding: 5px; overflow: hidden; position: relative; }
+        .preview-content iframe, .preview-content object { width: 100%; height: 100%; border: none; background: white; }
+        .preview-content img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .preview-actions { display: flex; gap: 10px; }
+        .preview-btn { background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+
+        .toast-box { position: fixed; bottom: 80px; right: 20px; left: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 4000; pointer-events: none; }
+        .toast { background: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border-left: 4px solid var(--primary); animation: slideIn 0.3s; font-size: 0.9rem; font-weight: 500; text-align: center; pointer-events: auto; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--text-main); color: white; padding: 15px; border-radius: 16px; text-align: center; }
+        .online-dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #4ade80; }
+
+        /* Admin Lists */
+        .admin-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; margin-bottom: 5px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 0.85rem; }
+        .log-item { font-size: 0.75rem; color: var(--text-light); padding: 5px 0; border-bottom: 1px solid #f1f5f9; }
+        
+        .btn-xs-del { background: #fee2e2; color: #ef4444; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+        .btn-xs-edit { background: #e0e7ff; color: #4338ca; border: none; width: 24px; height: 24px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+
+        #master-admin-section { display: none; }
+        
+        @media (max-width: 850px) {
+            .desktop-menu { display: none; }
+            .mobile-nav { display: flex; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .hero { padding: 1.5rem 1.2rem; }
+            .drive-container { grid-template-columns: 1fr; }
+            .container { margin-top: 10px; }
+            .file-card { height: 90px; }
+            .file-preview { width: 80px; }
+            .file-info { padding: 8px 10px; }
+        }
+
+        @media (min-width: 851px) {
+            .mobile-nav { display: none !important; }
+            body { padding-bottom: 0; }
+            .drive-container { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .grid-2 { grid-template-columns: 1fr 300px; }
+        }
+
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
 <body>
 
-    <!-- BACKGROUND -->
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-
-    <!-- DESKTOP APP BAR -->
-    <nav class="md-app-bar glass">
-        <div class="logo-area" onclick="window.nav('home')">
-            <div class="logo-icon glass-icon"><i class="fas fa-graduation-cap"></i></div>
-            <span class="logo-text">StudentHub</span>
+    <!-- NAVBAR (Top) -->
+    <nav>
+        <div class="logo" onclick="window.nav('home')">
+            <i class="fas fa-graduation-cap"></i> StudentHub
         </div>
-
-        <div class="desktop-nav glass-panel">
-            <button class="nav-item active" onclick="window.nav('home')">Home</button>
-            <button class="nav-item" onclick="window.nav('files')">Library</button>
-            <button class="nav-item" onclick="window.nav('drive')">Backup</button>
-            <button class="nav-item" onclick="window.nav('about')">About</button>
-            <button class="nav-item admin-trigger" onclick="window.handleAdminClick(event)">Admin</button>
+        <div class="desktop-menu">
+            <button class="menu-item active" onclick="window.nav('home')">Home</button>
+            <button class="menu-item" onclick="window.nav('files')">Library</button>
+            <button class="menu-item" onclick="window.nav('drive')">Backup</button>
+            <button class="menu-item" onclick="window.nav('about')">About</button>
+            <button class="menu-item admin-lock" onclick="window.handleAdminClick()">Admin</button>
         </div>
-
-        <div class="action-area">
-            <button id="login-btn" class="md-btn glass-btn glow-hover" onclick="window.googleLogin()">
-                <i class="fas fa-sign-in-alt"></i> <span>Login</span>
-            </button>
-
-            <div id="profile-container" class="profile-wrapper" style="display: none;">
-                <div class="profile-avatar ripple" onclick="window.toggleProfile(event)">
-                    <img id="user-avatar" src="" alt="Profile">
-                </div>
-                <div class="md-menu glass-panel" id="profile-dropdown">
-                    <div class="menu-header">
-                        <span id="user-name-display">User</span>
-                        <small>Student Account</small>
-                    </div>
-                    <div class="menu-divider"></div>
-                    <button class="menu-item-row" onclick="window.logout()">
-                        <div class="icon-box danger"><i class="fas fa-sign-out-alt"></i></div> Logout
-                    </button>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button id="login-btn" class="auth-btn" onclick="window.googleLogin()">Login</button>
+            <div id="profile-container" class="profile-container" onclick="window.toggleProfile()">
+                <img id="user-avatar" src="" alt="Profile" class="profile-img">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <div class="pd-item" style="cursor:default; font-weight:600; color:#333;"><span id="user-name-display">User</span></div>
+                    <div class="pd-item" onclick="window.logout()">Logout</div>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- MAIN CONTENT -->
-    <div class="main-container">
+    <div class="container">
 
         <!-- === HOME === -->
-        <div id="home" class="view-section active">
-            <div class="md-card hero-card animate-pop">
-                <div class="hero-content">
-                    <div class="hero-top">
-                        <h1>Welcome Back</h1>
-                        <div class="hero-icon"><i class="fas fa-graduation-cap"></i></div>
-                    </div>
-                    <div class="quote-container">
-                        <i class="fas fa-quote-left"></i>
-                        <span id="quote-text">Loading inspiration...</span>
-                    </div>
-                </div>
+        <div id="home" class="section active">
+            <div class="hero">
+                <h1>Welcome, Student!</h1>
+                <p style="color:var(--text-light); margin:0;">Access your notes and updates.</p>
             </div>
-
-            <div class="section-header">
-                <h3>Latest Notices</h3>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
+                <i class="fas fa-bullhorn" style="color:var(--secondary); font-size:1.3rem;"></i>
+                <h3 style="margin:0;">Notice Board</h3>
             </div>
-            <div id="public-notices" class="grid-layout">
-                <div class="md-card outlined skeleton-card">
-                    <div class="sk-line w-70"></div>
-                    <div class="sk-line w-40"></div>
-                </div>
-            </div>
-
-            <h4 class="section-label fade-in">Quick Menu</h4>
-            <div class="quick-grid fade-in">
-                <div class="quick-card ripple" onclick="window.nav('files')">
-                    <div class="icon-circle small gradient-purple"><i class="fas fa-book-open"></i></div>
-                    <span>Browse</span>
-                </div>
-                <div class="quick-card ripple" onclick="window.switchFileView('upload'); window.nav('files')">
-                    <div class="icon-circle small gradient-blue"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <span>Upload</span>
-                </div>
-                <div class="quick-card ripple" onclick="window.nav('drive')">
-                    <div class="icon-circle small gradient-orange"><i class="fab fa-google-drive"></i></div>
-                    <span>Backup</span>
-                </div>
-                <div class="quick-card ripple" onclick="window.switchFileView('resources'); window.nav('files')">
-                    <div class="icon-circle small gradient-green"><i class="fas fa-book"></i></div>
-                    <span>Resources</span>
-                </div>
-            </div>
+            <div id="public-notices" class="notices-grid"><div class="notice-card" style="justify-content:center; color:#999;">Loading...</div></div>
         </div>
 
         <!-- === LIBRARY === -->
-        <div id="files" class="view-section">
-            <div class="library-header fade-in">
-                <h2>Library</h2>
-                <div class="md-tabs pill-box">
-                    <button class="tab-pill active" onclick="window.switchFileView('browse')">Browse</button>
-                    <button class="tab-pill" onclick="window.switchFileView('resources')">Resources</button>
-                    <button class="tab-pill" onclick="window.switchFileView('upload')">Upload</button>
+        <div id="files" class="section">
+            <div style="text-align:center; margin-bottom: 15px;">
+                <h2>Resource Library</h2>
+            </div>
+
+            <div class="file-tabs-container">
+                <button class="file-tab-btn active" onclick="window.switchFileView('browse')">Browse</button>
+                <button class="file-tab-btn" onclick="window.switchFileView('upload')">Upload / Status</button>
+            </div>
+
+            <div id="view-browse" class="file-sub-view active">
+                <input type="text" class="search-bar" placeholder="🔍 Search materials..." onkeyup="window.filterFiles(this.value)">
+                <div id="public-gallery" class="file-list">
+                    <p style="text-align:center; color:#999;">Loading files...</p>
                 </div>
             </div>
 
-            <div id="view-browse" class="sub-view active">
-                <div class="search-wrapper animate-fade">
-                    <div class="search-pill glass">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search files..." onkeyup="window.filterFiles(this.value)">
+            <div id="view-upload" class="file-sub-view">
+                <div style="background:white; padding:1.5rem; border-radius:20px; text-align:center; border:2px dashed #cbd5e1; margin-bottom:1.5rem;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size:2.5rem; color:var(--primary); margin-bottom:10px;"></i>
+                    <h3 style="margin:0 0 5px;">Upload File</h3>
+                    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:15px;">PDF/Image. Max 10MB.</p>
+                    <input type="text" id="file-title" placeholder="File Title (e.g. Physics Notes)">
+                    <input type="file" id="file-input" multiple accept=".pdf, .jpg, .jpeg, .png">
+                    <div id="progress-container" style="display:none; margin:10px 0;">
+                        <div style="font-size:0.8rem; text-align:left;" id="progress-text">Uploading...</div>
+                        <div style="height:6px; background:#e5e7eb; border-radius:3px; overflow:hidden;"><div id="progress-bar" style="height:100%; width:0%; background:var(--primary); transition:0.3s;"></div></div>
                     </div>
-                </div>
-                <div id="public-gallery" class="list-layout">
-                    <div class="empty-state">
-                        <div class="spinner"></div>
-                        <p>Fetching resources...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-resources" class="sub-view">
-                <div class="md-card glass animate-pop center-content">
-                    <div class="icon-circle small gradient-green" style="margin-bottom: 10px;">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>Free Study Materials</h3>
-                    <p class="subtext">Curated PDFs and notes for you.</p>
-                </div>
-                <div id="resources-list" class="list-layout">
-                    <div class="empty-state">
-                        <div class="spinner"></div>
-                        <p>Loading materials...</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-upload" class="sub-view">
-                <div class="md-card large-padding center-text animate-pop">
-                    <div class="icon-circle large pulse-anim"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <h3>Upload File</h3>
-                    <p class="subtext">PDF, JPG, PNG (Max 10MB)</p>
-
-                    <div class="input-group">
-                        <div class="md-text-field">
-                            <input type="text" id="file-title" placeholder=" ">
-                            <label>File Title</label>
-                            <div class="underline"></div>
-                        </div>
-                        <label class="file-drop-zone">
-                            <i class="fas fa-folder-open"></i>
-                            <span>Tap to select</span>
-                            <input type="file" id="file-input" multiple accept=".pdf, .jpg, .jpeg, .png">
-                        </label>
-                    </div>
-
-                    <div id="progress-container" class="linear-progress">
-                        <div class="progress-bar" id="progress-fill"></div>
-                    </div>
-                    <p id="progress-text" class="tiny-text"></p>
-
-                    <button id="upload-btn-el" onclick="window.uploadFile()"
-                        class="md-btn gradient-btn full-width">Start Upload</button>
+                    <button id="upload-btn-el" onclick="window.uploadFile()" class="auth-btn" style="width:100%; justify-content:center;">Upload Now</button>
                 </div>
 
-                <h4 class="section-label">My History</h4>
-                <div id="my-status-list" class="list-layout">
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <span>No upload history</span>
-                    </div>
+                <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-history" style="color:var(--text-main);"></i><h4 style="margin:0;">My History</h4>
+                </div>
+                <div id="my-status-list">
+                    <p style="text-align:center; color:#999; font-size:0.9rem;">Login to view your history.</p>
                 </div>
             </div>
         </div>
 
-        <!-- === DRIVE === -->
-        <div id="drive" class="view-section">
-            <div class="md-card gradient-card-2 animate-pop compact-header">
-                <div class="row-between">
-                    <div>
-                        <h2>Backup Drive</h2>
-                        <p style="opacity: 0.8; font-size: 0.9rem; margin:0">External folders</p>
-                    </div>
-                    <i class="fab fa-google-drive" style="font-size: 2.5rem; opacity: 0.3;"></i>
-                </div>
+        <!-- === BACKUP === -->
+        <div id="drive" class="section">
+            <div style="text-align:center; margin-bottom: 2rem;">
+                <h2><i class="fab fa-google-drive" style="color:#10b981;"></i> Cloud Backup</h2>
+                <p style="color:var(--text-light); font-size:0.9rem;">Fallback links if database is offline.</p>
             </div>
-
-            <h4 class="section-label fade-in">Tools</h4>
-            <div class="grid-layout fade-in" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));">
-                <a href="https://scholar.google.com" target="_blank" class="tool-chip glass"><i
-                        class="fas fa-graduation-cap" style="color:#4285F4"></i> Scholar</a>
-                <a href="https://chat.openai.com" target="_blank" class="tool-chip glass"><i class="fas fa-robot"
-                        style="color:#10a37f"></i> ChatGPT</a>
-                <a href="https://www.wolframalpha.com" target="_blank" class="tool-chip glass"><i
-                        class="fas fa-square-root-alt" style="color:#dd1100"></i> Wolfram</a>
-            </div>
-
-            <h4 class="section-label" style="margin-top: 20px;">Links</h4>
-            <div id="drive-links-list" class="grid-layout">
-                <div class="empty-state">
-                    <i class="fas fa-folder-open"></i>
-                    <span>No links available</span>
-                </div>
-            </div>
+            <div id="drive-links-list" class="drive-container"><p style="text-align:center; color:#888;">Checking backups...</p></div>
         </div>
 
         <!-- === ABOUT === -->
-        <div id="about" class="view-section">
-            <div class="about-wrapper animate-pop">
-                <div class="md-card glass about-card">
-                    <div class="center-text">
-                        <div class="logo-icon glass-icon large-icon"><i class="fas fa-graduation-cap"></i></div>
-                        <h2>StudentHub</h2>
-                        <span class="md-chip glass-chip">v4.4 Redesign</span>
-                    </div>
-                    <div class="menu-divider"></div>
-                    <div class="tech-stack-row">
-                        <i class="fas fa-fire" style="color:#FFCA28"></i>
-                        <i class="fab fa-js" style="color:#F7DF1E"></i>
-                        <i class="fab fa-html5" style="color:#E34F26"></i>
-                        <i class="fas fa-cloud" style="color:#3448C5"></i>
-                    </div>
+        <div id="about" class="section">
+            <div style="background:white; padding:30px; border-radius:24px; text-align:center; max-width:600px; margin:0 auto; box-shadow:var(--shadow);">
+                <i class="fas fa-graduation-cap" style="font-size:3.5rem; background:var(--gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:1rem;"></i>
+                <h2>StudentHub</h2>
+                <p style="line-height:1.6; color:var(--text-light);">A centralized platform for academic resource sharing.</p>
+                <div style="margin-top:25px; border-top:1px solid var(--border); padding-top:15px;">
+                    <small>Developed by</small><h4 style="margin:5px 0; color:var(--primary);">Sabbir Ahmed Rakib</h4><small style="color:var(--text-light);">&copy; 2024</small>
                 </div>
-                <div class="md-card glass about-card compact">
-                    <div class="row-between">
-                        <div class="row-gap">
-                            <div class="avatar-circle"><i class="fas fa-code"></i></div>
-                            <div>
-                                <small>Developer</small>
-                                <h4 style="margin:0">Sabbir Ahmed Rakib</h4>
-                            </div>
-                        </div>
-                        <div class="social-row">
-                            <a href="#" class="icon-btn-plain"><i class="fab fa-github"></i></a>
-                            <a href="#" class="icon-btn-plain"><i class="fas fa-envelope"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <p class="tiny-text center-text" style="opacity: 0.5; margin-top: 20px;">© 2025 StudentHub Portal.</p>
             </div>
         </div>
 
-        <!-- === ADMIN (REDESIGNED + USER DIRECTORY FIX) === -->
-        <div id="admin-dash" class="view-section">
-
-            <div class="admin-top-bar glass animate-pop">
-                <div class="row-gap">
-                    <div class="icon-circle small gradient-purple"><i class="fas fa-shield-alt"></i></div>
-                    <h3 style="margin:0">Dashboard</h3>
-                </div>
-                <button onclick="window.logoutAdmin()" class="md-btn text danger">Exit</button>
+        <!-- === ADMIN === -->
+        <div id="admin-dash" class="section">
+            <div style="background:var(--text-main); color:white; padding:1.2rem; border-radius:16px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+                <h3><i class="fas fa-shield-alt"></i> Admin</h3>
+                <button onclick="window.logoutAdmin()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:5px 12px; border-radius:50px; cursor:pointer; font-size:0.8rem;">Exit</button>
             </div>
-
-            <!-- Navigation Tabs -->
-            <div class="admin-tabs-wrapper animate-fade">
-                <button class="admin-tab active" onclick="window.switchAdminTab('overview', this)"><i
-                        class="fas fa-chart-pie"></i> Overview</button>
-                <button class="admin-tab" onclick="window.switchAdminTab('content', this)"><i
-                        class="fas fa-layer-group"></i> Content</button>
-                <button class="admin-tab" onclick="window.switchAdminTab('users', this)"><i class="fas fa-users"></i>
-                    Users</button>
-                <button class="admin-tab" onclick="window.switchAdminTab('tools', this)"><i class="fas fa-tools"></i>
-                    Tools</button>
+            <div class="stats-row">
+                <div class="stat-card"><div id="stat-total-users" style="font-size:1.5rem; font-weight:700;">...</div><small>Users</small></div>
+                <div class="stat-card"><div id="stat-active-users" style="font-size:1.5rem; font-weight:700;">0</div><small><span class="online-dot"></span>Online</small></div>
             </div>
+            <div class="grid-2">
+                <div>
+                    <h4 style="border-bottom:2px solid var(--border); padding-bottom:8px;">Pending Approvals</h4>
+                    <div id="admin-pending-list" style="margin-top:10px;">No pending items.</div>
+                    
+                    <h4 style="margin-top:25px; border-bottom:2px solid var(--border); padding-bottom:8px;">Online Users</h4>
+                    <div id="active-user-list" style="margin-top:10px; background:white; padding:15px; border-radius:12px; font-size:0.9rem;">None.</div>
 
-            <div class="admin-content-area">
-
-                <!-- TAB 1: OVERVIEW -->
-                <div id="adm-overview" class="adm-view active animate-fade">
-                    <div class="stats-grid">
-                        <div class="stat-card glass">
-                            <div class="stat-icon"><i class="fas fa-users"></i></div>
-                            <div class="stat-info">
-                                <h2 id="stat-total-users">...</h2>
-                                <small>Total Users</small>
-                            </div>
+                    <h4 style="margin-top:25px; border-bottom:2px solid var(--border); padding-bottom:8px;">Activity Log</h4>
+                    <div id="admin-activity-log" style="background:white; padding:15px; border-radius:12px; font-size:0.8rem; max-height:150px; overflow-y:auto;">Log empty.</div>
+                </div>
+                <div>
+                    <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
+                        <h4>Post Notice</h4>
+                        <textarea id="admin-msg" rows="3" placeholder="Write announcement..."></textarea>
+                        <button onclick="window.postNotice()" class="auth-btn" style="width:100%; justify-content:center;">Post</button>
+                    </div>
+                    
+                    <!-- MASTER ADMIN ONLY -->
+                    <div id="master-admin-section" style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border); border-left:4px solid #6366f1;">
+                        <h4>Manage Admins</h4>
+                        <div style="display:flex; gap:5px; margin-bottom:10px;">
+                            <input type="email" id="sub-admin-email" placeholder="Email" style="margin:0; flex:1;">
+                            <button onclick="window.addSubAdmin()" class="auth-btn" style="padding:10px;">Add</button>
                         </div>
-                        <div class="stat-card glass">
-                            <div class="stat-icon success"><i class="fas fa-wifi"></i></div>
-                            <div class="stat-info">
-                                <h2 id="stat-active-users">0</h2>
-                                <small>Online Now</small>
-                            </div>
-                        </div>
+                        <div id="admin-list" style="font-size:0.8rem; color:var(--text-light);"></div>
                     </div>
 
-                    <div class="dashboard-row">
-                        <div class="md-card glass full-h">
-                            <h4 class="card-title"><i class="fas fa-list-alt"></i> Activity Log</h4>
-                            <div id="admin-activity-log" class="scroll-list h-200 console-font">
-                                <div class="empty-state small">No recent activity</div>
-                            </div>
-                        </div>
-                        <div class="md-card glass full-h">
-                            <h4 class="card-title"><i class="fas fa-user-clock"></i> Active Users</h4>
-                            <div id="active-user-list-specific" class="scroll-list h-200">
-                                <div class="empty-state small">No users online</div>
-                            </div>
-                        </div>
+                    <!-- USER MANAGEMENT -->
+                    <div style="background:white; padding:15px; border-radius:16px; margin-bottom:15px; border:1px solid var(--border);">
+                        <h4>Manage Users</h4>
+                        <input type="text" placeholder="Search user..." onkeyup="window.filterUserList(this.value)">
+                        <div id="all-user-list" style="max-height:150px; overflow-y:auto;">Loading...</div>
+                    </div>
+
+                    <div style="background:white; padding:15px; border-radius:16px; border:1px solid var(--border);">
+                        <h4>Add Drive Link</h4>
+                        <input type="text" id="drive-title" placeholder="Name">
+                        <input type="text" id="drive-url" placeholder="URL">
+                        <button onclick="window.addDriveLink()" class="auth-btn" style="width:100%; justify-content:center; background:#10b981;">Add</button>
+                        <div id="admin-drive-list" style="margin-top:10px; font-size:0.8rem;"></div>
                     </div>
                 </div>
-
-                <!-- TAB 2: CONTENT -->
-                <div id="adm-content" class="adm-view">
-                    <div class="md-card glass border-warning">
-                        <h4 class="card-title" style="color:#f59e0b"><i class="fas fa-clock"></i> Pending Approvals</h4>
-                        <div id="admin-pending-list" class="scroll-list h-300">
-                            <div class="empty-state small">No pending files</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: USERS (REDESIGNED SECTION) -->
-                <div id="adm-users" class="adm-view">
-                    <div class="md-card glass">
-                        <h4 class="card-title" style="margin-bottom:12px;">User Directory</h4>
-
-                        <div class="search-pill glass small-search full-width" style="margin-bottom:16px;">
-                            <i class="fas fa-search"></i>
-                            <input type="text" placeholder="Filter users..."
-                                onkeyup="window.filterUserList(this.value)">
-                        </div>
-
-                        <!-- Updated Scrollable User List -->
-                        <div id="all-user-list" class="user-grid-scroll">
-                            <div class="empty-state">Loading users...</div>
-                        </div>
-                    </div>
-
-                    <div id="master-admin-section" class="md-card tonal-primary" style="display: none;">
-                        <h4 class="card-title" style="color:var(--primary)"><i class="fas fa-crown"></i> Master Control
-                        </h4>
-                        <div class="row-between top-align">
-                            <div style="flex:1; margin-right:10px;">
-                                <h5 style="margin:0 0 8px 0; color:var(--error)">Banned Users</h5>
-                                <div id="banned-user-list" class="mini-list box-inset">
-                                    <small>Loading...</small>
-                                </div>
-                            </div>
-                            <div style="flex:1;">
-                                <h5 style="margin:0 0 8px 0;">Sub-Admins</h5>
-                                <div class="row-gap mb-2">
-                                    <div class="md-text-field compact">
-                                        <input type="email" id="sub-admin-email" placeholder=" ">
-                                        <label>Email</label>
-                                    </div>
-                                    <button onclick="window.addSubAdmin()" class="icon-btn-plain"><i
-                                            class="fas fa-plus-circle"
-                                            style="font-size:1.5rem; color:var(--primary)"></i></button>
-                                </div>
-                                <div id="admin-list" class="mini-list box-inset"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: TOOLS -->
-                <div id="adm-tools" class="adm-view">
-                    <div class="dashboard-row">
-                        <!-- Add Resource -->
-                        <div class="md-card glass">
-                            <h4 class="card-title"><i class="fas fa-file-pdf"></i> Add Resource</h4>
-                            <div class="md-text-field">
-                                <input type="text" id="res-title" placeholder=" ">
-                                <label>Title</label>
-                            </div>
-                            <div class="md-text-field">
-                                <input type="text" id="res-url" placeholder=" ">
-                                <label>Link (URL)</label>
-                            </div>
-                            <p class="divider-text">- OR UPLOAD -</p>
-                            <label class="file-drop-zone small-zone">
-                                <i class="fas fa-cloud-upload-alt"></i> <span>Select PDF</span>
-                                <input type="file" id="res-file-input" accept=".pdf">
-                            </label>
-                            <div id="res-progress-container" class="linear-progress"
-                                style="display:none; margin-bottom:10px;">
-                                <div class="progress-bar" id="res-progress-fill"></div>
-                            </div>
-                            <button id="add-res-btn" onclick="window.addResource()"
-                                class="md-btn gradient-btn full-width">Add to Resources</button>
-                        </div>
-
-                        <div class="col-stack">
-                            <!-- Post Notice -->
-                            <div class="md-card glass">
-                                <h4 class="card-title"><i class="fas fa-bullhorn"></i> Post Notice</h4>
-                                <div class="md-text-field">
-                                    <textarea id="admin-msg" rows="2" placeholder=" "></textarea>
-                                    <label>Message</label>
-                                </div>
-                                <div class="action-row right">
-                                    <button onclick="window.postNotice()" class="md-btn gradient-btn">Post</button>
-                                </div>
-                            </div>
-
-                            <!-- Drive Link -->
-                            <div class="md-card glass">
-                                <h4 class="card-title"><i class="fab fa-google-drive"></i> Backup Link</h4>
-                                <div class="md-text-field">
-                                    <input type="text" id="drive-title" placeholder=" ">
-                                    <label>Title</label>
-                                </div>
-                                <div class="md-text-field">
-                                    <input type="text" id="drive-url" placeholder=" ">
-                                    <label>URL</label>
-                                </div>
-                                <button onclick="window.addDriveLink()" class="md-btn text full-width">Add Link</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 
-    <!-- MOBILE BOTTOM BAR -->
-    <div class="md-bottom-bar glass">
-        <button class="bar-item active" onclick="window.nav('home')">
-            <div class="icon-box"><i class="fas fa-home"></i></div>
-            <span class="label">Home</span>
-        </button>
-        <button class="bar-item" onclick="window.nav('files')">
-            <div class="icon-box"><i class="fas fa-folder"></i></div>
-            <span class="label">Library</span>
-        </button>
-        <button class="bar-item" onclick="window.nav('drive')">
-            <div class="icon-box"><i class="fab fa-google-drive"></i></div>
-            <span class="label">Backup</span>
-        </button>
-        <button class="bar-item" onclick="window.nav('about')">
-            <div class="icon-box"><i class="fas fa-info"></i></div>
-            <span class="label">About</span>
-        </button>
-        <button class="bar-item" onclick="window.handleAdminClick(event)">
-            <div class="icon-box warning"><i class="fas fa-shield-alt"></i></div>
-            <span class="label">Admin</span>
-        </button>
+    <!-- BOTTOM NAV (Mobile Only) -->
+    <div class="mobile-nav">
+        <button class="mob-link active" onclick="window.nav('home')"><i class="fas fa-home"></i> Home</button>
+        <button class="mob-link" onclick="window.nav('files')"><i class="fas fa-book"></i> Library</button>
+        <button class="mob-link" onclick="window.nav('drive')"><i class="fab fa-google-drive"></i> Backup</button>
+        <button class="mob-link" onclick="window.nav('about')"><i class="fas fa-info-circle"></i> About</button>
+        <button class="mob-link" onclick="window.handleAdminClick()"><i class="fas fa-user-shield"></i> Admin</button>
     </div>
 
-    <!-- MODALS -->
-    <div id="admin-modal" class="md-dialog-overlay glass-overlay">
-        <div class="md-dialog animate-pop">
-            <div class="dialog-icon gradient-icon"><i class="fas fa-lock"></i></div>
+    <!-- Modals -->
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-box">
             <h3>Admin Access</h3>
-            <p class="subtext">Enter credentials</p>
-            <div class="md-text-field">
-                <input type="text" id="admin-user" placeholder=" ">
-                <label>User ID</label>
-            </div>
-            <div class="md-text-field">
-                <input type="password" id="admin-pass" placeholder=" ">
-                <label>Password</label>
-            </div>
-            <div class="dialog-actions">
-                <button onclick="document.getElementById('admin-modal').style.display='none'"
-                    class="md-btn text">Cancel</button>
-                <button onclick="window.verifyAdmin()" class="md-btn gradient-btn">Unlock</button>
-            </div>
+            <input type="text" id="admin-user" placeholder="Username">
+            <input type="password" id="admin-pass" placeholder="Password">
+            <button onclick="window.verifyAdmin()" class="auth-btn" style="width:100%; justify-content:center;">Unlock</button>
+            <button onclick="document.getElementById('admin-modal').style.display='none'" style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;">Cancel</button>
         </div>
     </div>
 
     <div id="preview-modal" class="preview-overlay">
-        <div class="preview-toolbar">
-            <h4 id="preview-title">Preview</h4>
+        <div class="preview-header">
+            <h4 id="preview-title" style="margin:0;">Preview</h4>
             <div class="preview-actions">
-                <button onclick="window.switchPreviewMode('google')" class="md-chip glass-chip">Google</button>
-                <button onclick="window.switchPreviewMode('native')" class="md-chip glass-chip">Native</button>
-                <button onclick="window.openExternal()" class="icon-btn-plain"><i
-                        class="fas fa-external-link-alt"></i></button>
-                <button onclick="window.closePreview()" class="icon-btn-plain"><i class="fas fa-times"></i></button>
+                <button class="preview-btn" onclick="window.switchPreviewMode('google')">Google View</button>
+                <button class="preview-btn" onclick="window.switchPreviewMode('native')">Native View</button>
+                <button onclick="window.closePreview()" style="background:none; border:none; color:white; font-size:1.8rem; cursor:pointer;">&times;</button>
             </div>
         </div>
         <div id="preview-body" class="preview-content"></div>
+        <div id="preview-fallback" style="text-align:center; padding:10px; color:white; background:rgba(0,0,0,0.8);"></div>
     </div>
 
-    <div id="toast-box" class="snackbar-container"></div>
+    <div class="toast-box" id="toast-box"></div>
 
-    <script type="module" src="script.js"></script>
+    <!-- LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, updateDoc, deleteDoc, query, where, onSnapshot, getDocs, serverTimestamp, orderBy, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3fovDzCF_3mCFD4yGsvgCFfan_tuDc3Y",
+            authDomain: "studenthub-599bf.firebaseapp.com",
+            projectId: "studenthub-599bf",
+            storageBucket: "studenthub-599bf.firebasestorage.app",
+            messagingSenderId: "46949030478",
+            appId: "1:46949030478:web:75e914274035b1d5d8c11f"
+        };
+        const CLOUD_NAME = "dvmwnkyyh"; 
+        const UPLOAD_PRESET = "StudentHub"; 
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+        
+        let currentUser = null;
+        let isAdmin = false;
+        let isMaster = false;
+        let presenceInterval = null;
+        let statsUnsub = null;
+        let currentPreviewUrl = '';
+        let currentPreviewType = '';
+
+        // --- GLOBAL UTILS ---
+        window.nav = (id) => {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id === 'admin' ? 'admin-dash' : id).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.mob-link').forEach(b => b.classList.remove('active'));
+            const idx = ['home', 'files', 'drive', 'about', 'admin'].indexOf(id);
+            if(idx > -1) {
+                if(document.querySelectorAll('.menu-item')[idx]) document.querySelectorAll('.menu-item')[idx].classList.add('active');
+                if(document.querySelectorAll('.mob-link')[idx]) document.querySelectorAll('.mob-link')[idx].classList.add('active');
+            }
+            window.scrollTo(0,0);
+        }
+
+        window.switchFileView = (view) => {
+            document.querySelectorAll('.file-sub-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.file-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`view-${view}`).classList.add('active');
+            const btns = document.querySelectorAll('.file-tab-btn');
+            if(view === 'browse') btns[0].classList.add('active'); else btns[1].classList.add('active');
+        }
+
+        window.toggleProfile = () => document.getElementById('profile-dropdown').classList.toggle('show');
+        window.onclick = (e) => {
+            if (!e.target.matches('.profile-img') && !e.target.matches('.profile-container')) document.getElementById('profile-dropdown').classList.remove('show');
+        }
+
+        window.toast = (msg, type='info') => {
+            const box = document.getElementById('toast-box');
+            const el = document.createElement('div');
+            el.className = 'toast';
+            el.style.borderLeftColor = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#6366f1');
+            el.innerText = msg;
+            box.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        window.filterFiles = (term) => {
+            document.querySelectorAll('.file-card').forEach(c => {
+                c.style.display = c.querySelector('.file-title').innerText.toLowerCase().includes(term.toLowerCase()) ? 'flex' : 'none';
+            });
+        }
+
+        window.filterUserList = (term) => {
+            document.querySelectorAll('.user-row').forEach(c => {
+                c.style.display = c.innerText.toLowerCase().includes(term.toLowerCase()) ? 'flex' : 'none';
+            });
+        }
+
+        // --- PREVIEW LOGIC ---
+        window.openPreview = (url, type, title) => {
+            currentPreviewUrl = url;
+            currentPreviewType = type;
+            document.getElementById('preview-title').innerText = title;
+            document.getElementById('preview-modal').style.display = 'flex';
+            document.getElementById('preview-fallback').innerHTML = `<a href="${url}" target="_blank" style="color:white; text-decoration:underline;">Open Original File</a>`;
+            window.switchPreviewMode('google'); 
+        }
+
+        window.switchPreviewMode = (mode) => {
+            const body = document.getElementById('preview-body');
+            if(currentPreviewType === 'PDF') {
+                if(mode === 'google') {
+                    body.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(currentPreviewUrl)}&embedded=true"></iframe>`;
+                } else {
+                    body.innerHTML = `<object data="${currentPreviewUrl}" type="application/pdf" width="100%" height="100%"><p style="color:white">Cannot embed. Use "Open Original".</p></object>`;
+                }
+            } else {
+                body.innerHTML = `<img src="${currentPreviewUrl}" alt="preview">`;
+            }
+        }
+
+        window.closePreview = () => {
+            document.getElementById('preview-modal').style.display = 'none';
+            document.getElementById('preview-body').innerHTML = '';
+        }
+
+        // --- AUTH ---
+        window.googleLogin = () => signInWithPopup(auth, provider).catch(e => window.toast(e.message, 'error'));
+        window.logout = () => signOut(auth).then(() => window.location.reload());
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if(user) {
+                // Check Ban Status
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+                if(userSnap.exists() && userSnap.data().banned) {
+                    await signOut(auth);
+                    alert("Account Banned.");
+                    return;
+                }
+
+                document.getElementById('login-btn').style.display = 'none';
+                document.getElementById('profile-container').style.display = 'flex';
+                document.getElementById('user-avatar').src = user.photoURL || 'https://via.placeholder.com/40';
+                document.getElementById('user-name-display').innerText = user.displayName;
+                checkSubAdmin(user.email);
+                registerUser(user);
+                startPresence(user);
+                loadAllFiles();
+            } else {
+                if(presenceInterval) clearInterval(presenceInterval);
+                loadAllFiles();
+            }
+        });
+
+        async function registerUser(user) {
+            try { await setDoc(doc(db, "users", user.uid), { email: user.email, name: user.displayName, lastSeen: serverTimestamp(), banned: false }, { merge: true }); } catch(e){}
+        }
+
+        function startPresence(user) {
+            const ref = doc(db, "presence", user.uid);
+            const heartbeat = () => setDoc(ref, { email: user.email, uid: user.uid, lastActive: serverTimestamp() });
+            heartbeat();
+            presenceInterval = setInterval(heartbeat, 30000);
+            window.addEventListener('beforeunload', () => deleteDoc(ref));
+        }
+
+        // --- ADMIN ---
+        window.handleAdminClick = () => isAdmin ? window.nav('admin') : document.getElementById('admin-modal').style.display = 'flex';
+        
+        window.verifyAdmin = () => {
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+            if(u === "Rakib" && p === "adminrakib") {
+                isMaster = true; 
+                activateAdmin(); document.getElementById('admin-modal').style.display = 'none'; window.toast("Master Unlocked", "success");
+            } else { window.toast("Invalid", "error"); }
+        }
+
+        async function checkSubAdmin(email) {
+            const snap = await getDocs(query(collection(db, "admins"), where("email", "==", email)));
+            if(!snap.empty) { activateAdmin(); window.toast("Admin Access", "success"); }
+        }
+
+        function activateAdmin() {
+            isAdmin = true; 
+            document.body.classList.add('is-admin');
+            if(isMaster) document.getElementById('master-admin-section').style.display = 'block';
+            window.nav('admin');
+            loadStats(); loadAllFiles(); loadAdminDrive(); loadAdminList(); loadUserManagement(); loadLogs();
+        }
+
+        window.logoutAdmin = () => { 
+            isAdmin = false; isMaster = false;
+            document.body.classList.remove('is-admin'); 
+            document.getElementById('master-admin-section').style.display = 'none';
+            if(statsUnsub) statsUnsub(); 
+            window.nav('home'); window.toast("Exited Admin"); 
+        }
+
+        // LOGGING
+        const logAction = (msg) => {
+            if(isAdmin && currentUser) {
+                addDoc(collection(db, "logs"), { message: `${currentUser.displayName}: ${msg}`, timestamp: serverTimestamp() });
+            }
+        }
+
+        function loadLogs() {
+            onSnapshot(query(collection(db, "logs"), orderBy("timestamp", "desc")), (snap) => {
+                let html = "";
+                snap.forEach(doc => html += `<div class="log-item">${doc.data().message}</div>`);
+                document.getElementById('admin-activity-log').innerHTML = html || 'No activity.';
+            });
+        }
+
+        // USER MANAGEMENT
+        function loadUserManagement() {
+            onSnapshot(collection(db, "users"), (snap) => {
+                let html = "";
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    let btn = '';
+                    // Only Master can ban/unban
+                    if(isMaster) {
+                        btn = u.banned ? 
+                            `<button onclick="window.unbanUser('${doc.id}')" class="icon-btn" style="background:#10b981"><i class="fas fa-check"></i></button>` :
+                            `<button onclick="window.banUser('${doc.id}')" class="icon-btn btn-del"><i class="fas fa-ban"></i></button>`;
+                    }
+                    html += `<div class="user-row"><div>${u.name} <small>(${u.email})</small></div>${btn}</div>`;
+                });
+                document.getElementById('all-user-list').innerHTML = html;
+            });
+        }
+
+        window.banUser = async (uid) => {
+            if(!isMaster) return window.toast("Master Admin only", "error");
+            if(confirm("Ban this user?")) { await updateDoc(doc(db, "users", uid), { banned: true }); logAction("Banned user"); window.toast("Banned", "info"); }
+        }
+        window.unbanUser = async (uid) => {
+            if(!isMaster) return window.toast("Master Admin only", "error");
+            await updateDoc(doc(db, "users", uid), { banned: false }); logAction("Unbanned user"); window.toast("Unbanned", "success");
+        }
+
+        // SUB ADMINS
+        window.addSubAdmin = async () => {
+            if(!isMaster) return;
+            const email = document.getElementById('sub-admin-email').value;
+            if(!email) return window.toast("Enter email", "error");
+            await addDoc(collection(db, "admins"), { email });
+            document.getElementById('sub-admin-email').value = '';
+            logAction("Added sub-admin");
+            window.toast("Admin added", "success");
+        }
+
+        window.removeAdmin = async (id) => {
+            if(!isMaster) return;
+            if(confirm("Remove this admin?")) {
+                await deleteDoc(doc(db, "admins", id));
+                logAction("Removed sub-admin");
+                window.toast("Removed", "success");
+            }
+        }
+
+        function loadAdminList() {
+            onSnapshot(collection(db, "admins"), (snap) => {
+                let html = "";
+                snap.forEach(doc => {
+                    const delBtn = isMaster ? `<button onclick="window.removeAdmin('${doc.id}')" class="btn-xs-del">X</button>` : '';
+                    html += `<div class="admin-row"><div><i class="fas fa-user-shield" style="color:#6366f1; margin-right:5px;"></i> ${doc.data().email}</div>${delBtn}</div>`;
+                });
+                document.getElementById('admin-list').innerHTML = html || 'No sub-admins.';
+            });
+        }
+
+        async function loadStats() {
+            const snap = await getCountFromServer(collection(db, "users"));
+            document.getElementById('stat-total-users').innerText = snap.data().count;
+            statsUnsub = onSnapshot(collection(db, "presence"), (snapshot) => {
+                const now = Date.now();
+                let activeCount = 0; let html = "";
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.lastActive) {
+                        const lastSeen = data.lastActive.toMillis ? data.lastActive.toMillis() : Date.now();
+                        if (now - lastSeen < 120000) { activeCount++; html += `<div><span class="online-dot"></span> ${data.email}</div>`; }
+                    }
+                });
+                document.getElementById('stat-active-users').innerText = activeCount;
+                document.getElementById('active-user-list').innerHTML = html || "No one online.";
+            });
+        }
+
+        // UPLOAD
+        window.uploadFile = async () => {
+            if(!currentUser) return window.toast("Login required", "error");
+            const files = document.getElementById('file-input').files;
+            const baseTitle = document.getElementById('file-title').value.trim();
+            if(files.length === 0) return window.toast("No files selected", "error");
+
+            document.getElementById('progress-container').style.display = 'block';
+            document.getElementById('upload-btn-el').disabled = true;
+
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+
+            for(let i=0; i<files.length; i++) {
+                const file = files[i];
+                if(!allowedTypes.includes(file.type)) { window.toast(`Skipped ${file.name}: Invalid Type`, "error"); continue; }
+
+                document.getElementById('progress-text').innerText = `Uploading ${i+1}/${files.length}`;
+                document.getElementById('progress-bar').style.width = '30%';
+
+                const title = baseTitle ? (files.length > 1 ? `${baseTitle} (${i+1})` : baseTitle) : file.name;
+                const type = file.type.includes('pdf') ? 'PDF' : 'Image';
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', UPLOAD_PRESET);
+
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    document.getElementById('progress-bar').style.width = '100%';
+                    await addDoc(collection(db, "files"), {
+                        title, url: data.secure_url, type, uploader: currentUser.displayName, 
+                        status: isAdmin ? 'approved' : 'pending', timestamp: serverTimestamp()
+                    });
+                } catch(e) { window.toast("Upload error: " + e.message, "error"); }
+            }
+            window.toast(isAdmin ? "Posted" : "Submitted", "success");
+            document.getElementById('file-title').value = '';
+            document.getElementById('file-input').value = '';
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('upload-btn-el').disabled = false;
+        }
+
+        // ACTIONS (Global)
+        window.conf = (msg, cb) => { if(confirm(msg)) setTimeout(()=> { if(confirm("Confirm action?")) cb(); }, 100); }
+        window.approve = (id) => window.conf("Approve file?", async () => { await updateDoc(doc(db, "files", id), { status: 'approved' }); logAction("Approved file"); window.toast("Approved", "success"); });
+        window.rejectFile = (id) => window.conf("Reject file?", async () => { await updateDoc(doc(db, "files", id), { status: 'rejected' }); logAction("Rejected file"); window.toast("Rejected", "info"); });
+        window.deleteFile = (id) => window.conf("Delete permanently?", async () => { await deleteDoc(doc(db, "files", id)); logAction("Deleted file"); window.toast("Deleted", "info"); });
+        window.deleteNotice = (id) => window.conf("Delete notice?", async () => { await deleteDoc(doc(db, "notices", id)); logAction("Deleted notice"); window.toast("Deleted", "info"); });
+        window.deleteDrive = (id) => window.conf("Delete link?", async () => { await deleteDoc(doc(db, "drive_links", id)); logAction("Deleted link"); window.toast("Deleted", "info"); });
+        
+        // ADMIN EDITING
+        window.renameFile = async (id, oldName) => {
+            const newName = prompt("Rename file:", oldName);
+            if(newName && newName !== oldName) {
+                await updateDoc(doc(db, "files", id), { title: newName });
+                logAction(`Renamed file to ${newName}`);
+                window.toast("Renamed", "success");
+            }
+        }
+        
+        window.editDriveLink = async (id, oldTitle, oldUrl) => {
+            const newTitle = prompt("Edit Title:", oldTitle);
+            if(newTitle === null) return;
+            const newUrl = prompt("Edit URL:", oldUrl);
+            if(newUrl === null) return;
+
+            if(newTitle && newUrl && (newTitle !== oldTitle || newUrl !== oldUrl)) {
+                await updateDoc(doc(db, "drive_links", id), { title: newTitle, url: newUrl });
+                logAction("Edited drive link");
+                window.toast("Updated", "success");
+            }
+        }
+
+        window.editNotice = async (id, oldMsg) => {
+            const newMsg = prompt("Edit notice:", oldMsg);
+            if(newMsg && newMsg !== oldMsg) {
+                await updateDoc(doc(db, "notices", id), { message: newMsg });
+                logAction("Edited notice");
+                window.toast("Updated", "success");
+            }
+        }
+
+        // USER ACTIONS
+        window.userRenameFile = async (id, oldName) => {
+            if(!currentUser) return;
+            const newName = prompt("Rename your file:", oldName);
+            if(newName && newName !== oldName) {
+                await updateDoc(doc(db, "files", id), { title: newName });
+                window.toast("Renamed", "success");
+            }
+        }
+        window.userDeleteFile = async (id) => {
+            if(!currentUser) return;
+            if(confirm("Delete your file permanently?")) {
+                await deleteDoc(doc(db, "files", id));
+                window.toast("File deleted", "info");
+            }
+        }
+
+        window.postNotice = async () => {
+            const msg = document.getElementById('admin-msg').value;
+            if(!msg) return;
+            await addDoc(collection(db, "notices"), { message: msg, author: currentUser?.displayName || 'Admin', timestamp: serverTimestamp() });
+            document.getElementById('admin-msg').value = ''; 
+            logAction("Posted notice");
+            window.toast("Posted", "success");
+        }
+        window.addDriveLink = async () => {
+            const title = document.getElementById('drive-title').value, url = document.getElementById('drive-url').value;
+            if(!title || !url) return;
+            await addDoc(collection(db, "drive_links"), { title, url, timestamp: serverTimestamp() });
+            document.getElementById('drive-title').value = ''; document.getElementById('drive-url').value = ''; 
+            logAction("Added drive link");
+            window.toast("Added", "success");
+        }
+
+        // LOADERS
+        function loadAllFiles() {
+            onSnapshot(collection(db, "files"), (snap) => {
+                let publicHtml = "", pendingHtml = "", myHtml = "";
+                const allFiles = [];
+                snap.forEach(doc => allFiles.push({ id: doc.id, ...doc.data() }));
+                allFiles.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+                allFiles.forEach(d => {
+                    // Public List
+                    if(d.status === 'approved') {
+                        const icon = d.type === 'PDF' ? '<i class="fas fa-file-pdf" style="color:#ef4444; font-size:2rem;"></i>' : `<img src="${d.url}" alt="img">`;
+                        
+                        // Strict Guest Logic: Show Download button ONLY if logged in
+                        let downloadBtn = '';
+                        if(currentUser) {
+                            downloadBtn = `<a href="${d.url}" class="action-link" download target="_blank">Download</a>`;
+                        } else {
+                            downloadBtn = `<span class="action-link" style="color:#94a3b8; cursor:pointer;" onclick="window.toast('Login to download', 'info')">Download</span>`;
+                        }
+
+                        publicHtml += `
+                        <div class="file-card">
+                            <div class="admin-controls">
+                                <button class="icon-btn btn-edit" onclick="window.renameFile('${d.id}', '${d.title}')"><i class="fas fa-pen"></i></button>
+                                <button class="icon-btn btn-del" onclick="window.deleteFile('${d.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                            <div class="file-preview">${icon}</div>
+                            <div class="file-info">
+                                <div class="file-title">${d.title}</div>
+                                <div class="file-meta">${d.type} • ${d.uploader}</div>
+                                <div class="file-actions">
+                                    <span class="action-link" onclick="window.openPreview('${d.url}', '${d.type}', '${d.title}')">Preview</span>
+                                    <span style="color:#ddd">|</span>
+                                    ${downloadBtn}
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+                    // Admin Pending
+                    if(d.status === 'pending') {
+                        pendingHtml += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;"><div style="font-weight:600;">${d.title}</div><small>${d.uploader}</small><div style="display:flex; gap:10px; margin-top:5px;"><button onclick="window.openPreview('${d.url}','${d.type}','${d.title}')" style="cursor:pointer;">View</button><button onclick="window.approve('${d.id}')" style="color:green; cursor:pointer;">Approve</button><button onclick="window.rejectFile('${d.id}')" style="color:orange; cursor:pointer;">Reject</button><button onclick="window.deleteFile('${d.id}')" style="color:red; cursor:pointer;"><i class="fas fa-trash"></i></button></div></div>`;
+                    }
+                    // My History
+                    if(currentUser && d.uploader === currentUser.displayName) {
+                        let badge = d.status === 'approved' ? 'st-approved' : (d.status === 'rejected' ? 'st-rejected' : 'st-pending');
+                        myHtml += `
+                        <div class="status-row">
+                            <div class="status-info">
+                                <div style="font-weight:500; font-size:0.85rem;">${d.title}</div>
+                                <span class="status-badge ${badge}">${d.status}</span>
+                            </div>
+                            <div class="user-actions">
+                                <button onclick="window.userRenameFile('${d.id}', '${d.title}')" class="user-icon-btn"><i class="fas fa-pen"></i></button>
+                                <button onclick="window.userDeleteFile('${d.id}')" class="user-icon-btn" style="color:#ef4444;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    }
+                });
+                document.getElementById('public-gallery').innerHTML = publicHtml || '<p style="text-align:center;">No files found.</p>';
+                document.getElementById('admin-pending-list').innerHTML = pendingHtml || 'No pending items.';
+                document.getElementById('my-status-list').innerHTML = myHtml || '<p style="text-align:center; color:#999;">No uploads yet.</p>';
+            });
+        }
+
+        onSnapshot(query(collection(db, "notices"), orderBy("timestamp", "desc")), (snap) => {
+            let html = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                const date = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleDateString() : 'Today';
+                html += `
+                <div class="notice-card">
+                    <div class="admin-controls-notice">
+                        <button class="icon-btn btn-edit" onclick="window.editNotice('${doc.id}', '${d.message}')"><i class="fas fa-pen"></i></button>
+                        <button class="icon-btn btn-del" onclick="window.deleteNotice('${doc.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="notice-icon"><i class="fas fa-bell"></i></div>
+                    <div class="notice-content"><div class="notice-msg">${d.message}</div><div class="notice-meta"><span><i class="far fa-calendar-alt"></i> ${date}</span><span>• ${d.author}</span></div></div>
+                </div>`;
+            });
+            document.getElementById('public-notices').innerHTML = html || '<p>No notices.</p>';
+        });
+
+        onSnapshot(query(collection(db, "drive_links"), orderBy("timestamp", "desc")), (s) => {
+            let html = "", adminHtml = "";
+            s.forEach(d => {
+                // Public View
+                html += `<a href="${d.data().url}" target="_blank" class="drive-card"><i class="fab fa-google-drive" style="color:#10b981; font-size:1.5rem;"></i><span>${d.data().title}</span> <button class="admin-del-only" onclick="event.preventDefault(); window.deleteDrive('${d.id}')"><i class="fas fa-trash"></i></button></a>`;
+                
+                // Admin Edit View
+                adminHtml += `
+                <div class="admin-row">
+                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        <i class="fab fa-google-drive" style="color:#10b981; margin-right:5px;"></i> ${d.data().title}
+                    </span>
+                    <div style="display:flex; gap:5px;">
+                        <button class="btn-xs-edit" onclick="window.editDriveLink('${d.id}', '${d.data().title}', '${d.data().url}')"><i class="fas fa-pen"></i></button>
+                        <button class="btn-xs-del" onclick="window.deleteDrive('${d.id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('drive-links-list').innerHTML = html || '<p style="text-align:center; color:#888;">No links.</p>';
+            document.getElementById('admin-drive-list').innerHTML = adminHtml;
+        });
+
+        function loadAdminDrive() { /* Handled in main listener above */ }
+    </script>
 </body>
-
 </html>
